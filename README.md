@@ -1,4 +1,4 @@
-#GValli Package Repository
+##GValli Package Repository
 
 Official package repository for GValli, designed to store, manage, and distribute .gpkg software packages.
 
