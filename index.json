@@ -5,9 +5,21 @@ gpkg list:
     {
       "name": "glavo",
       "version": "0.1.0 Stable",
-      "description": "Официальный терминал G OS",
-      "url": "https://github.com/AdrescorGiti/gvalli-repo/releases/download/v1.0.0/example-pkg.gpkg",
-      "sha256": "вставь_сюда_sha256_хэш_файла"
+      "description": "Official G OS terminal",
+      "url": "https://github.com/AdrescorGiti/Glavo/releases/download/v.0.1.0/glavo-0.1.0.gpkg",
+      "sha256": "978738613f37044bc013acccfbffa97e97bb077dde78a59e07978d54fdfb5d45"
+    }
+  ]
+}
+
+{
+  "packages": [
+    {
+      "name": "gpkg-manager",
+      "version": "1",
+      "description": "Manager of gpkg packages",
+      "url": "https://github.com/AdrescorGiti/Glavo/releases/download/v.0.1.0/glavo-0.1.0.gpkg",
+      "sha256": "f5cb1431b5722cc20605e1357ff667519f7c5ee470042005c78c31a3276cb98a"
     }
   ]
 }
