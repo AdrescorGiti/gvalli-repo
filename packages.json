@@ -1,0 +1,11 @@
+{
+  "packages": [
+    {
+      "name": "gvalli",
+      "version": "0.2.0",
+      "description": "gvalli is a lightweight, ultra-fast CLI package manager built in Rust for G OS, designed to seamlessly build, install, and manage .gpkg software packages.",
+      "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.2.0/gvalli-0.2.0.gpkg",
+      "sha256": "740bdabed92d08360bc8739b8d3cbbb63bcb945b8d6874e3b063b738f13a95ab"
+    }
+  ]
+}
