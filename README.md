@@ -117,6 +117,7 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 
 ---
 
+
 ## ⚙️ Specification / Спецификация
 
 ### Package Index Schema (`packages.json`)
@@ -124,44 +125,30 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 The entire repository relies on a validated JSON schema for cataloging available software.
 
 <details>
-<summary>🔍 Click to view example <code>index.json</code></summary>
+<summary>🔍 Click to view example <code>packages.json</code></summary>
 
+```json
 {
   "version": "1.0",
-  "updated_at": "2026-08-09T18:00:00Z",
+  "updated_at": "2026-08-10T00:00:00Z",
   "packages": [
     {
       "name": "neofetch",
       "version": "7.1.0",
-      "architecture": "x86_64",
+      "architecture": "x86_64-v3",
       "description": "CLI system information tool written in bash",
       "category": "utils",
-      "homepage": "https://github.com/dylanaraps/neofetch",
-      "download_url": "https://github.com/gvalli-os/packages/releases/download/v7.1.0/neofetch-7.1.0-x86_64.gpkg",
+      "homepage": "[https://github.com/dylanaraps/neofetch](https://github.com/dylanaraps/neofetch)",
+      "download_url": "[https://github.com/AdrescorGiti/GValli/releases/download/v7.1.0/neofetch-7.1.0-x86_64-v3.gpkg](https://github.com/AdrescorGiti/GValli/releases/download/v7.1.0/neofetch-7.1.0-x86_64-v3.gpkg)",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 34812,
-      "dependencies": ["bash"]
+      "dependencies": [
+        "bash"
+      ]
     }
   ]
 }
-</details>
-
-### Repository Layout
-
-.
-
-├── .github/
-
-│   └── workflows/
-
-│       └── process_package.yml ## Auto-upload .gpkg to GitHub Releases 
-
-│      
-
-├── packages.json ## Master database index 
-
-└── README.md ## Documentation hub 
-
+```
 ---
 
 ## 🤝 Contributing
