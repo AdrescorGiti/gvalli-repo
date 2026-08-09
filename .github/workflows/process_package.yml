@@ -1,15 +1,17 @@
-name: Process Package Submission
+name: GValli Package Pipeline
 
 on:
   issues:
     types: [opened, edited]
 
+permissions:
+  contents: write
+  issues: write
+
 jobs:
-  process:
+  process-and-scan:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
@@ -18,14 +20,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
-      - name: Process Issue, Verify Creator, Download and Update JSON
+      - name: Process, Scan, and Update
         run: |
           cat << 'EOF' > script.py
-          import json, os, re, hashlib, urllib.request
+          import json, os, re, hashlib, urllib.request, tarfile, shutil
 
-          # Читаем исходный файл события GitHub
           event_path = os.environ['GITHUB_EVENT_PATH']
           with open(event_path, 'r', encoding='utf-8') as f:
               event = json.load(f)
@@ -35,135 +36,157 @@ jobs:
           body = issue.get('body', '')
           issue_author = issue.get('user', {}).get('login', '')
 
-          # Проверяем, что это заявка на пакет
           if '[Package]' not in title:
               print('Not a package submission. Skipping.')
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=false\n')
               exit(0)
 
-          # Парсим тело заявки
           sections = re.split(r'###\s+', body)
           data = {}
           for sec in sections:
-              if not sec.strip():
-                  continue
+              if not sec.strip(): continue
               lines = sec.strip().split('\n')
-              heading = lines[0].strip()
-              value = '\n'.join(lines[1:]).strip()
-              data[heading] = value
+              data[lines[0].strip()] = '\n'.join(lines[1:]).strip()
 
           name = data.get('Package Name', '').strip()
           version = data.get('Version', '').strip()
           description = data.get('Description', '').strip()
           url = data.get('Direct Download URL (.gpkg)', '').strip()
           
-          # Обработка зависимостей
           deps_raw = data.get('Dependencies', '').strip()
-          if deps_raw and deps_raw.lower() not in ['none', '_no response_']:
-              dependencies = [d.strip() for d in re.split(r'[,;\s]+', deps_raw) if d.strip()]
-          else:
-              dependencies = []
+          dependencies = [d.strip() for d in re.split(r'[,;\s]+', deps_raw) if d.strip()] if deps_raw and deps_raw.lower() not in ['none', '_no response_'] else []
 
           if not name or not url:
               print('Error: Missing required fields.')
               exit(1)
 
-          # Читаем существующий packages.json
           json_file = 'packages.json'
           pkg_data = {'packages': []}
-
           if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
-              try:
-                  with open(json_file, 'r', encoding='utf-8') as f:
-                      loaded = json.load(f)
-                      if isinstance(loaded, dict) and 'packages' in loaded:
-                          pkg_data = loaded
-              except Exception as e:
-                  print(f'Warning: JSON is broken ({e}). Re-initializing.')
+              with open(json_file, 'r', encoding='utf-8') as f:
+                  pkg_data = json.load(f)
 
-          # ПРОВЕРКА ПРАВ СОЗДАТЕЛЯ (CREATOR CHECK)
-          existing_pkg = None
-          for p in pkg_data.get('packages', []):
-              if p.get('name') == name:
-                  existing_pkg = p
-                  break
-
+          # 1. ПРОВЕРКА ПРАВ (AUTH CHECK)
+          existing_pkg = next((p for p in pkg_data.get('packages', []) if p.get('name') == name), None)
           if existing_pkg:
               original_creator = existing_pkg.get('creator', '')
-              # Если у пакета есть владелец и он не совпадает с автором Issue
               if original_creator and original_creator.lower() != issue_author.lower():
-                  print(f'Unauthorized update attempt by @{issue_author} for package owned by @{original_creator}')
                   with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
-                      f.write('IS_PACKAGE=false\n')
-                      f.write('UNAUTHORIZED=true\n')
-                      f.write(f'PKG_NAME={name}\n')
-                      f.write(f'ORIGINAL_CREATOR={original_creator}\n')
+                      f.write('IS_PACKAGE=true\nUNAUTHORIZED=true\nMALWARE=false\n')
+                      f.write(f'PKG_NAME={name}\nORIGINAL_CREATOR={original_creator}\n')
                   exit(0)
 
-          # Скачиваем файл для проверки
+          # Скачиваем пакет
+          print(f"Downloading {url}...")
           req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
           with urllib.request.urlopen(req) as resp, open('package.gpkg', 'wb') as out:
               out.write(resp.read())
 
-          # Считаем SHA256
+          # 2. АНТИВИРУСНЫЙ СКАНЕР (SENTINEL)
+          BLACKLIST = [
+              b"rm -rf /", b"sudo rm -rf", b"mkfs", b"dd if=", b"> /etc/passwd",
+              b"> /etc/shadow", b"chmod 777 /", b"bash -i", b"nc -e", 
+              b"/dev/tcp/", b"curl | bash", b"wget -qO- | sh"
+          ]
+          
+          is_clean = True
+          malware_reason = ""
+          extract_dir = "extract_eval"
+          
+          try:
+              with tarfile.open('package.gpkg', "r:*") as tar:
+                  for member in tar.getmembers():
+                      if member.name.startswith("/") or "../" in member.name:
+                          is_clean = False
+                          malware_reason = f"ZIP-SLIP (Path Traversal) в файле {member.name}"
+                          break
+                  if is_clean:
+                      tar.extractall(path=extract_dir)
+          except Exception as e:
+              is_clean = False
+              malware_reason = f"Поврежденный или нечитаемый архив: {e}"
+
+          if is_clean:
+              for root, _, files in os.walk(extract_dir):
+                  for file in files:
+                      try:
+                          with open(os.path.join(root, file), "rb") as f:
+                              content = f.read()
+                              for danger in BLACKLIST:
+                                  if danger in content:
+                                      is_clean = False
+                                      malware_reason = f"Вредоносный код ({danger.decode('utf-8', errors='ignore')}) в файле {file}"
+                                      break
+                      except: pass
+                      if not is_clean: break
+                  if not is_clean: break
+
+          if not is_clean:
+              with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+                  f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
+                  f.write(f'PKG_NAME={name}\nMALWARE_REASON={malware_reason}\n')
+              exit(0)
+
+          # 3. ЕСЛИ ПАКЕТ ЧИСТ - СЧИТАЕМ ХЕШ И ДОБАВЛЯЕМ В JSON
           hasher = hashlib.sha256()
           with open('package.gpkg', 'rb') as f:
-              while chunk := f.read(8192):
-                  hasher.update(chunk)
+              while chunk := f.read(8192): hasher.update(chunk)
           sha256 = hasher.hexdigest()
 
-          # Удаляем старую версию из списка (если она была)
           pkg_data['packages'] = [p for p in pkg_data.get('packages', []) if p.get('name') != name]
-
-          # Определяем итогового владельца (если это новый пакет, им становится issue_author)
-          creator_name = existing_pkg.get('creator', issue_author) if existing_pkg else issue_author
-
-          # Добавляем обноволенный/новый пакет
           pkg_data['packages'].append({
               'name': name,
               'version': version,
               'description': description,
-              'creator': creator_name,
+              'creator': existing_pkg.get('creator', issue_author) if existing_pkg else issue_author,
               'dependencies': dependencies,
               'url': url,
               'sha256': sha256
           })
 
-          # Записываем обновленный JSON обратно
           with open(json_file, 'w', encoding='utf-8') as f:
               json.dump(pkg_data, f, indent=2, ensure_ascii=False)
 
-          # Передаем переменные для Git коммита и ответа
           with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
-              f.write('IS_PACKAGE=true\n')
-              f.write('UNAUTHORIZED=false\n')
-              f.write(f'PKG_NAME={name}\n')
-              f.write(f'PKG_SHA256={sha256}\n')
+              f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=false\n')
+              f.write(f'PKG_NAME={name}\nPKG_SHA256={sha256}\n')
           EOF
           
           python3 script.py
 
       - name: Commit and Push changes
-        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false'
+        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false' && env.MALWARE == 'false'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update package ${{ env.PKG_NAME }} via automated request"
+          commit_message: "Update package ${{ env.PKG_NAME }} via automated request (Security Passed)"
           file_pattern: "packages.json"
 
       - name: Comment and Close (Success)
-        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false'
+        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false' && env.MALWARE == 'false'
         uses: peter-evans/close-issue@v3
         with:
           comment: |
-            🎉 Поздравляем! Пакет **${{ env.PKG_NAME }}** успешно обновлен/добавлен в репозиторий G OS.
+            🎉 Поздравляем! Пакет **${{ env.PKG_NAME }}** прошел проверку безопасности и успешно обновлен/добавлен в репозиторий.
             SHA256: `${{ env.PKG_SHA256 }}`
 
       - name: Comment and Close (Unauthorized)
-        if: env.UNAUTHORIZED == 'true'
+        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'true'
         uses: peter-evans/close-issue@v3
         with:
           comment: |
             🚫 **Отказ в обновлении пакета!**
             Пакет **${{ env.PKG_NAME }}** принадлежит пользователю **@${{ env.ORIGINAL_CREATOR }}**. 
             Только первоначальный создатель пакета может публиковать для него обновления.
+            
+      - name: Comment and Close (Malware Detected)
+        if: env.IS_PACKAGE == 'true' && env.MALWARE == 'true'
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: |
+            🛑 **КРИТИЧЕСКАЯ УГРОЗА БЕЗОПАСНОСТИ!**
+            Пакет **${{ env.PKG_NAME }}** был заблокирован системой GValli Security Sentinel.
+            **Причина:** ${{ env.MALWARE_REASON }}
+            
+            Пакет не добавлен в репозиторий. Повторная загрузка вредоносного ПО приведет к блокировке.
+            
