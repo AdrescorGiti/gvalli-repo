@@ -1,6 +1,6 @@
 # 📦 GValli Package Repository
 
-**Официальный репозиторий индексов и дистрибуции пакетов для экосистемы ОС GValli**
+**Официальный репозиторий индексов и дистрибуции пакетов для экосистемы G OS**
 
 [![GValli Ecosystem](https://img.shields.io/badge/G-Operating_System-6f42c1?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/AdrescorGiti/GValli)
 [![Package Format](https://img.shields.io/badge/Package_Format-.gpkg-ff6b6b?style=for-the-badge)](https://github.com)
