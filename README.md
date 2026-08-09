@@ -168,7 +168,7 @@ We actively welcome community contributions to expand and maintain the **G OS** 
 ### How you can help:
 
 * **📦 Package Creation:** Build and archive missing software into official `.gpkg` bundles for `x86_64-v3`.
-* **🐛 Issue Reporting:** Notify the team about broken binary URLs or outdated metadata via [GitHub Issues](../../issues).
+* **🐛 Issue Reporting:** Notify the team about broken binary URLs or add your `.gpkg` packet to repository in [GitHub Issues](../../issues).
 * **⚙️ Core Ecosystem:** Submit Pull Requests to improve deployment workflows, automated CI/CD checks, and index structure.
 
 > **Note:** Please verify package cryptographic checksums (SHA-256) locally prior to submitting a PR.
