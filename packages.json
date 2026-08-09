@@ -20,6 +20,13 @@
       "description": "gvalli is a lightweight, ultra-fast CLI package manager built in Rust for G OS, designed to seamlessly build, install, and manage .gpkg software packages.",
       "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.2.0/gvalli-0.2.0.gpkg",
       "sha256": "740bdabed92d08360bc8739b8d3cbbb63bcb945b8d6874e3b063b738f13a95ab"
+    },
+    {
+      "name": "d2g",
+      "version": "1.0.0",
+      "description": "deb2gpkg is a utility designed to convert Debian packages (.deb) into native G OS packages (.gpkg).",
+      "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v1.0/d2g-1.0.gpkg",
+      "sha256": "c091859e5a099280ee30340d775ab25c9bfa2cf768b7db23d5f78f860cfbb32b"
     }
   ]
 }
