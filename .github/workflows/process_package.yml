@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Process Issue, Download and Update JSON
+      - name: Process Issue, Verify Creator, Download and Update JSON
         run: |
           cat << 'EOF' > script.py
           import json, os, re, hashlib, urllib.request
@@ -30,8 +30,10 @@ jobs:
           with open(event_path, 'r', encoding='utf-8') as f:
               event = json.load(f)
 
-          title = event.get('issue', {}).get('title', '')
-          body = event.get('issue', {}).get('body', '')
+          issue = event.get('issue', {})
+          title = issue.get('title', '')
+          body = issue.get('body', '')
+          issue_author = issue.get('user', {}).get('login', '')
 
           # Проверяем, что это заявка на пакет
           if '[Package]' not in title:
@@ -59,7 +61,6 @@ jobs:
           # Обработка зависимостей
           deps_raw = data.get('Dependencies', '').strip()
           if deps_raw and deps_raw.lower() not in ['none', '_no response_']:
-              # Разбиваем по запятым, точкам с запятой или пробелам
               dependencies = [d.strip() for d in re.split(r'[,;\s]+', deps_raw) if d.strip()]
           else:
               dependencies = []
@@ -68,21 +69,7 @@ jobs:
               print('Error: Missing required fields.')
               exit(1)
 
-          print(f'Successfully parsed: {name} v{version} (Dependencies: {dependencies})')
-
-          # Скачиваем файл
-          req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-          with urllib.request.urlopen(req) as resp, open('package.gpkg', 'wb') as out:
-              out.write(resp.read())
-
-          # Считаем SHA256
-          hasher = hashlib.sha256()
-          with open('package.gpkg', 'rb') as f:
-              while chunk := f.read(8192):
-                  hasher.update(chunk)
-          sha256 = hasher.hexdigest()
-
-          # Безопасное чтение пакетов
+          # Читаем существующий packages.json
           json_file = 'packages.json'
           pkg_data = {'packages': []}
 
@@ -95,24 +82,62 @@ jobs:
               except Exception as e:
                   print(f'Warning: JSON is broken ({e}). Re-initializing.')
 
-          # Обновляем структуру пакета
+          # ПРОВЕРКА ПРАВ СОЗДАТЕЛЯ (CREATOR CHECK)
+          existing_pkg = None
+          for p in pkg_data.get('packages', []):
+              if p.get('name') == name:
+                  existing_pkg = p
+                  break
+
+          if existing_pkg:
+              original_creator = existing_pkg.get('creator', '')
+              # Если у пакета есть владелец и он не совпадает с автором Issue
+              if original_creator and original_creator.lower() != issue_author.lower():
+                  print(f'Unauthorized update attempt by @{issue_author} for package owned by @{original_creator}')
+                  with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+                      f.write('IS_PACKAGE=false\n')
+                      f.write('UNAUTHORIZED=true\n')
+                      f.write(f'PKG_NAME={name}\n')
+                      f.write(f'ORIGINAL_CREATOR={original_creator}\n')
+                  exit(0)
+
+          # Скачиваем файл для проверки
+          req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+          with urllib.request.urlopen(req) as resp, open('package.gpkg', 'wb') as out:
+              out.write(resp.read())
+
+          # Считаем SHA256
+          hasher = hashlib.sha256()
+          with open('package.gpkg', 'rb') as f:
+              while chunk := f.read(8192):
+                  hasher.update(chunk)
+          sha256 = hasher.hexdigest()
+
+          # Удаляем старую версию из списка (если она была)
           pkg_data['packages'] = [p for p in pkg_data.get('packages', []) if p.get('name') != name]
+
+          # Определяем итогового владельца (если это новый пакет, им становится issue_author)
+          creator_name = existing_pkg.get('creator', issue_author) if existing_pkg else issue_author
+
+          # Добавляем обноволенный/новый пакет
           pkg_data['packages'].append({
               'name': name,
               'version': version,
               'description': description,
+              'creator': creator_name,
               'dependencies': dependencies,
               'url': url,
               'sha256': sha256
           })
 
-          # Записываем обратно
+          # Записываем обновленный JSON обратно
           with open(json_file, 'w', encoding='utf-8') as f:
               json.dump(pkg_data, f, indent=2, ensure_ascii=False)
 
-          # Передаем переменные для следующих шагов
+          # Передаем переменные для Git коммита и ответа
           with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
               f.write('IS_PACKAGE=true\n')
+              f.write('UNAUTHORIZED=false\n')
               f.write(f'PKG_NAME={name}\n')
               f.write(f'PKG_SHA256={sha256}\n')
           EOF
@@ -120,16 +145,25 @@ jobs:
           python3 script.py
 
       - name: Commit and Push changes
-        if: env.IS_PACKAGE == 'true'
+        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Add package ${{ env.PKG_NAME }} via automated request"
+          commit_message: "Update package ${{ env.PKG_NAME }} via automated request"
           file_pattern: "packages.json"
 
-      - name: Close Issue and Comment
-        if: env.IS_PACKAGE == 'true'
+      - name: Comment and Close (Success)
+        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false'
         uses: peter-evans/close-issue@v3
         with:
           comment: |
-            🎉 Поздравляем! Ваш пакет **${{ env.PKG_NAME }}** успешно добавлен в репозиторий G OS.
+            🎉 Поздравляем! Пакет **${{ env.PKG_NAME }}** успешно обновлен/добавлен в репозиторий G OS.
             SHA256: `${{ env.PKG_SHA256 }}`
+
+      - name: Comment and Close (Unauthorized)
+        if: env.UNAUTHORIZED == 'true'
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: |
+            🚫 **Отказ в обновлении пакета!**
+            Пакет **${{ env.PKG_NAME }}** принадлежит пользователю **@${{ env.ORIGINAL_CREATOR }}**. 
+            Только первоначальный создатель пакета может публиковать для него обновления.
