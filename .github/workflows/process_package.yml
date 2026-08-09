@@ -1,4 +1,4 @@
-name: Process Package Submission
+iname: Process Package Submission
 
 on:
   issues:
@@ -224,6 +224,24 @@ jobs:
 
       - name: Comment and Close (Unauthorized)
         if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'true'
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: |
+            🚫 **Отказ в обновлении пакета!**
+            Пакет **${{ env.PKG_NAME }}** принадлежит пользователю **@${{ env.ORIGINAL_CREATOR }}**. 
+            Только первоначальный создатель пакета может публиковать для него обновления.
+
+      - name: Comment and Close (Security / Archive Error)
+        if: env.IS_PACKAGE == 'true' && env.MALWARE == 'true'
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: |
+            🛑 **ОШИБКА ПРОВЕРКИ ИЛИ БЛОКИРОВКА ПАКЕТА!**
+            Пакет **${{ env.PKG_NAME }}** был отклонен сканером GValli Sentinel.
+            
+            **Причина:**
+            > ${{ env.MALWARE_REASON }}
+v.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'true'
         uses: peter-evans/close-issue@v3
         with:
           comment: |
