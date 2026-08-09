@@ -1,0 +1,40 @@
+name: Submit a .gpkg Package
+description: Suggest a new software package for G OS
+title: "[Package]: "
+labels: ["package-request"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Package Name
+      description: The technical name of your package (e.g. gpkg-manager)
+      placeholder: my-app
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Version of the package (e.g. 1.0.0 or 0.1.0 Stable)
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: description
+    attributes:
+      label: Description
+      description: Short description in English
+      placeholder: Lightweight utility for...
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Direct Download URL (.gpkg)
+      description: Direct link to the .gpkg release file
+      placeholder: https://github.com/user/repo/releases/download/v1.0/app.gpkg
+    validations:
+      required: true
