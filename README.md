@@ -111,12 +111,9 @@ The entire repository relies on a validated JSON schema for cataloging available
 .
 ├── .github/
 │   └── workflows/
-│       ├── validate.yml      # CI check for index.json integrity
-│       └── release.yml       # Auto-upload .gpkg to GitHub Releases
-├── recipes/                  # Build scripts for community packages
-│   └── neofetch/
-│       └── gpkg.build
-├── index.json                # Master database index
+│       └── process_package.yml       # Auto-upload .gpkg to GitHub Releases
+│      
+├── packages.json                # Master database index
 └── README.md                 # Documentation hub
 
 ---
@@ -125,9 +122,9 @@ The entire repository relies on a validated JSON schema for cataloging available
 
 We welcome community contributions! You can help by:
 1. Packaging new utilities into `.gpkg` archives.
-2. Submitting Pull Requests to add new packages to `index.json`.
-3. Reporting broken download links or checksum mismatches via [Issues](../../issues).
+2. Reporting broken download links or add your `.gpkg`  via [Issues](../../issues).
+3. Help with G OS soft
 
 ---
 
-*Crafted with ❤️ for the **GValli Linux Ecosystem***
+*Crafted with ❤️ for the **G Operating System***
