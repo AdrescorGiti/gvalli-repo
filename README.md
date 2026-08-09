@@ -109,11 +109,17 @@ The entire repository relies on a validated JSON schema for cataloging available
 ### Repository Layout
 
 .
+
 ├── .github/
+
 │   └── workflows/
+
 │       └── process_package.yml       # Auto-upload .gpkg to GitHub Releases
+
 │      
+
 ├── packages.json                # Master database index
+
 └── README.md                 # Documentation hub
 
 ---
