@@ -31,6 +31,15 @@ body:
       required: true
 
   - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Required packages from gvalli-repo (e.g. gvalli). Leave empty if none.
+      placeholder: gvalli
+    validations:
+      required: false
+
+  - type: input
     id: url
     attributes:
       label: Direct Download URL (.gpkg)
