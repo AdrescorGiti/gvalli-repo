@@ -114,13 +114,13 @@ The entire repository relies on a validated JSON schema for cataloging available
 
 │   └── workflows/
 
-│       └── process_package.yml        ## Auto-upload .gpkg to GitHub Releases ##
+│       └── process_package.yml ## Auto-upload .gpkg to GitHub Releases 
 
 │      
 
-├── packages.json                 ## Master database index ##
+├── packages.json ## Master database index 
 
-└── README.md                  ## Documentation hub ##
+└── README.md ## Documentation hub 
 
 ---
 
