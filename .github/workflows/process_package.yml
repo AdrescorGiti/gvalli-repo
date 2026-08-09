@@ -25,7 +25,7 @@ jobs:
       - name: Process Issue, Scan Security, and Update JSON
         run: |
           cat << 'EOF' > script.py
-          import json, os, re, hashlib, subprocess, tarfile, shutil
+          import json, os, re, hashlib, subprocess, shutil
 
           # 1. Чтение события GitHub
           event_path = os.environ['GITHUB_EVENT_PATH']
@@ -37,14 +37,13 @@ jobs:
           body = issue.get('body', '')
           issue_author = issue.get('user', {}).get('login', '')
 
-          # Проверка заголовка
           if '[Package]' not in title:
               print('Not a package submission. Skipping.')
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=false\n')
               exit(0)
 
-          # Парсинг тела Issue
+          # Парсинг Issue
           sections = re.split(r'###\s+', body)
           data = {}
           for sec in sections:
@@ -67,7 +66,7 @@ jobs:
                   f.write(f'PKG_NAME={name or "Unknown"}\nMALWARE_REASON=Заполнены не все обязательные поля.\n')
               exit(0)
 
-          # Поиск файла индекса
+          # Чтение JSON
           json_file = 'packages.json' if os.path.exists('packages.json') else 'pakages.json' if os.path.exists('pakages.json') else 'packages.json'
           pkg_data = {'packages': []}
           if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
@@ -81,7 +80,7 @@ jobs:
               except Exception as e:
                   print(f'Warning: JSON read error ({e}).')
 
-          # 2. ПРОВЕРКА ПРАВ СОЗДАТЕЛЯ
+          # 2. ПРОВЕРКА ПРАВ
           existing_pkg = next((p for p in pkg_data.get('packages', []) if p.get('name') == name), None)
           if existing_pkg:
               original_creator = existing_pkg.get('creator', '')
@@ -92,18 +91,18 @@ jobs:
                       f.write(f'PKG_NAME={name}\nORIGINAL_CREATOR={original_creator}\n')
                   exit(0)
 
-          # 3. НАДЕЖНОЕ СКАЧИВАНИЕ ЧЕРЕЗ CURL (ПРОБИВАЕТ 302 РЕДИРЕКТЫ GITHUB RELEASES)
+          # 3. СКАЧИВАНИЕ ФАЙЛА
           print(f"Downloading {url} via curl...")
-          curl_cmd = ["curl", "-sSL", "-A", "Mozilla/5.0 (X11; Linux x86_64)", "-o", "package.gpkg", url]
+          curl_cmd = ["curl", "-sSLf", "-A", "Mozilla/5.0 (X11; Linux x86_64)", "-o", "package.gpkg", url]
           res = subprocess.run(curl_cmd, capture_output=True)
 
           if res.returncode != 0 or not os.path.exists('package.gpkg') or os.path.getsize('package.gpkg') == 0:
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
-                  f.write(f'PKG_NAME={name}\nMALWARE_REASON=Ошибка скачивания файла по указанной ссылке.\n')
+                  f.write(f'PKG_NAME={name}\nMALWARE_REASON=Не удалось скачать файл (HTTP error или битая ссылка).\n')
               exit(0)
 
-          # 4. АНТИВИРУСНЫЙ СКАНЕР И ПРОВЕРКА ЦЕЛОСТНОСТИ
+          # 4. РАСПАКОВКА D2G (ПОДДЕРЖКА ZSTD / TAR / ZIP)
           BLACKLIST = [
               b"rm -rf /", b"sudo rm -rf", b"mkfs", b"wipefs", b"dd if=", b"> /etc/passwd",
               b"> /etc/shadow", b"> /etc/sudoers", b"chmod 777 /", b"chmod -R 777 /",
@@ -114,37 +113,39 @@ jobs:
           is_clean = True
           malware_reason = ""
           extract_dir = "extract_eval"
-          
-          # Проверка на HTML вместо архива
-          with open('package.gpkg', 'rb') as f:
-              header = f.read(200)
-              if b'<!DOCTYPE html>' in header or b'<html' in header.lower():
-                  is_clean = False
-                  malware_reason = "По ссылке скачалась HTML-страница ошибки/редиректа вместо файла .gpkg."
+          os.makedirs(extract_dir, exist_ok=True)
 
-          # Распаковка и проверка Zip-Slip
-          if is_clean:
-              try:
-                  with tarfile.open('package.gpkg', "r:*") as tar:
-                      for member in tar.getmembers():
-                          if member.name.startswith("/") or "../" in member.name:
-                              is_clean = False
-                              malware_reason = f"ZIP-SLIP АТАКА в файле {member.name}"
-                              break
-                      if is_clean:
-                          tar.extractall(path=extract_dir)
-              except Exception as e:
-                  is_clean = False
-                  # Очищаем причину от переносов строк, чтобы не ломать GITHUB_ENV
-                  clean_err = str(e).replace('\n', ' ').replace('\r', ' ')
-                  malware_reason = f"Файл не является валидным архивом .gpkg ({clean_err})"
+          # Пробуем системный tar (поддерживает .zst, .gz, .xz, .bz2)
+          res_tar = subprocess.run(["tar", "-xf", "package.gpkg", "-C", extract_dir], capture_output=True)
+          unpacked = (res_tar.returncode == 0)
 
-          # Пофайловый анализ
+          # Если не tar, пробуем unzip
+          if not unpacked:
+              res_zip = subprocess.run(["unzip", "-q", "-o", "package.gpkg", "-d", extract_dir], capture_output=True)
+              unpacked = (res_zip.returncode == 0)
+
+          if not unpacked:
+              is_clean = False
+              malware_reason = "Не удалось распаковать .gpkg (неподдерживаемый архив или поврежденный файл)."
+
+          # Пофайловый анализ на вирусы и Zip-Slip
           if is_clean:
-              for root, _, files in os.walk(extract_dir):
+              for root, dirs, files in os.walk(extract_dir):
+                  rel_root = os.path.relpath(root, extract_dir)
+                  if ".." in rel_root or rel_root.startswith("/"):
+                      is_clean = False
+                      malware_reason = f"ZIP-SLIP АТАКА в каталоге: {rel_root}"
+                      break
+
                   for file in files:
+                      file_path = os.path.join(root, file)
+                      if not os.path.abspath(file_path).startswith(os.path.abspath(extract_dir)):
+                          is_clean = False
+                          malware_reason = f"ZIP-SLIP АТАКА в файле {file}"
+                          break
+
                       try:
-                          with open(os.path.join(root, file), "rb") as f:
+                          with open(file_path, "rb") as f:
                               content = f.read()
                               for danger in BLACKLIST:
                                   if danger in content:
@@ -152,7 +153,8 @@ jobs:
                                       malware_reason = f"Вредоносный код ({danger.decode('utf-8', errors='ignore')}) в файле {file}"
                                       break
                       except Exception as e:
-                          print(f"Read error: {e}")
+                          print(f"Read error for {file}: {e}")
+
                       if not is_clean: break
                   if not is_clean: break
 
@@ -160,15 +162,14 @@ jobs:
               shutil.rmtree(extract_dir)
 
           if not is_clean:
-              # ВАЖНО: удаляем переводы строк из причины для безопасности GITHUB_ENV
               safe_reason = malware_reason.replace('\n', ' ').replace('\r', ' ')
-              print(f"Security/Archive error: {safe_reason}")
+              print(f"Security error: {safe_reason}")
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
                   f.write(f'PKG_NAME={name}\nMALWARE_REASON={safe_reason}\n')
               exit(0)
 
-          # 5. ХЕШ И ОБНОВЛЕНИЕ JSON
+          # 5. РАСЧЕТ SHA256 И ЗАПИСЬ
           hasher = hashlib.sha256()
           with open('package.gpkg', 'rb') as f:
               while chunk := f.read(8192): hasher.update(chunk)
@@ -234,6 +235,4 @@ jobs:
             
             **Причина:**
             > ${{ env.MALWARE_REASON }}
-            
-            Пакет **НЕ БЫЛ** добавлен в базу. Проверьте ссылку и целостность архива.
             
