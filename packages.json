@@ -30,15 +30,6 @@
       "sha256": "740bdabed92d08360bc8739b8d3cbbb63bcb945b8d6874e3b063b738f13a95ab"
     },
     {
-      "name": "64gram",
-      "version": "1.2.7",
-      "description": "Enhanced Telegram Desktop fork with power-user features and UI customization.",
-      "creator": "AdrescorGiti",
-      "dependencies": [],
-      "url": "https://github.com/AdrescorGiti/tdesktop-gpkg/releases/download/v.1.2.7/64gram_1.2.7_amd64.gpkg",
-      "sha256": "b16e786339abb64ac0a24b9039ab2e64cfdeb59fe549ce2700ecbdfee5750e35"
-    },
-    {
       "name": "d2g",
       "version": "2.0.0",
       "description": "deb2gpkg is a utility designed to convert Debian packages (.deb) into native G OS packages (.gpkg).",
