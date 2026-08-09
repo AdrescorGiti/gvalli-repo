@@ -79,7 +79,7 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 
 ## ⚙️ Specification / Спецификация
 
-### Package Index Schema (`index.json`)
+### Package Index Schema (`packages.json`)
 
 The entire repository relies on a validated JSON schema for cataloging available software.
 
