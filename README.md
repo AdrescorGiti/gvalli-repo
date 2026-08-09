@@ -7,7 +7,7 @@
 [![Architecture](https://img.shields.io/badge/Arch-x86__64_%7C_aarch64-4ecdc4?style=for-the-badge)](https://github.com)
 [![License](https://img.shields.io/badge/License-MIT-45b7d1?style=for-the-badge)](LICENSE)
 
-[🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specs]([#-specification--спецификация](https://github.com/AdrescorGiti/gvalli-repo/tree/main#%EF%B8%8F-specification--%D1%81%D0%BF%D0%B5%D1%86%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F)) • [🤝 Contributing](#-contributing)
+[🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specs](#-specification--спецификация]) • [🤝 Contributing](#-contributing)
 
 ---
 
