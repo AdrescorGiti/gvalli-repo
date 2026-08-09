@@ -1,6 +1,6 @@
 # 📦 GValli Package Repository
 
-<img width="300" height="250" alt="Gemini_Generated_Image_5tahh25tahh25tah-no-bg-preview (carve photos)" src="https://github.com/user-attachments/assets/b64078b2-4f17-49c0-bb3b-9851940f9630" />
+<img width="300" height="275" alt="Gemini_Generated_Image_5tahh25tahh25tah-no-bg-preview (carve photos)" src="https://github.com/user-attachments/assets/b64078b2-4f17-49c0-bb3b-9851940f9630" />
 
 
 **Официальный репозиторий индексов и дистрибуции пакетов для экосистемы G OS**
