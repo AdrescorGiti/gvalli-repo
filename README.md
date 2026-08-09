@@ -19,7 +19,7 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 
 | Feature | Description |
 | :--- | :--- |
-| **⚡ Instant Queries** | Near-zero latency search powered by a streamlined, flattened `index.json` catalog. |
+| **⚡ Instant Queries** | Near-zero latency search powered by a streamlined, flattened `packages.json` catalog. |
 | **📦 Bloat-Free Git** | Large binary `.gpkg` archives are offloaded to **GitHub Releases**, keeping repository footprint under 5MB. |
 | **🔐 Cryptographic Integrity** | Mandatory SHA-256 verification before extraction to guarantee binary safety. |
 | **🔄 Seamless Automation** | Built-in CLI sync (`gvalli update`) for effortless package index updates. |
@@ -59,7 +59,7 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 
 | Фича | Описание |
 | :--- | :--- |
-| **⚡ Мгновенный поиск** | Минимальная задержка при поиске благодаря оптимизированному индексу `index.json`. |
+| **⚡ Мгновенный поиск** | Минимальная задержка при поиске благодаря оптимизированному индексу `packages.json`. |
 | **📦 Чистая история Git** | Исполняемые `.gpkg` архивы хранятся в **GitHub Releases**, что спасает репозиторий от раздувания. |
 | **🔐 Гарантия безопасности** | Обязательная проверка контрольных сумм SHA-256 перед распаковкой каждого файла. |
 | **🔄 Простая автоматизация** | Синхронизация каталога одной командой (`gvalli update`). |
