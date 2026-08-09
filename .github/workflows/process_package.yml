@@ -22,7 +22,7 @@ jobs:
 
       - name: Process Issue, Download and Update JSON
         run: |
-          python3 -c "
+          python3 - << 'EOF'
           import json, os, re, hashlib, urllib.request
 
           # Читаем исходный файл события GitHub
@@ -58,7 +58,7 @@ jobs:
           url = data.get('Direct Download URL (.gpkg)', '').strip()
 
           if not name or not url:
-              print(f'Error: Missing required fields. Name: \"{name}\", URL: \"{url}\"')
+              print(f'Error: Missing required fields. Name: "{name}", URL: "{url}"')
               exit(1)
 
           print(f'Successfully parsed: {name} v{version}')
@@ -77,18 +77,18 @@ jobs:
           sha256 = hasher.hexdigest()
           print(f'Calculated SHA256: {sha256}')
 
-          # Гарантированно безопасное чтение/инициализация packages.json
+          # Безопасное чтение и обработка packages.json
           json_file = 'packages.json'
           pkg_data = {'packages': []}
 
-          if os.path.exists(json_file):
+          if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
               try:
                   with open(json_file, 'r', encoding='utf-8') as f:
                       loaded = json.load(f)
                       if isinstance(loaded, dict) and 'packages' in loaded and isinstance(loaded['packages'], list):
                           pkg_data = loaded
               except Exception as e:
-                  print(f'Warning: Could not parse {json_file} ({e}). Re-initializing.')
+                  print(f'Warning: Could not parse {json_file} ({e}). Re-initializing file.')
                   pkg_data = {'packages': []}
 
           new_pkg = {
@@ -99,7 +99,7 @@ jobs:
               'sha256': sha256
           }
 
-          # Обновляем или добавляем пакет в список
+          # Заменяем старую версию пакета или добавляем новый
           pkg_data['packages'] = [p for p in pkg_data.get('packages', []) if p.get('name') != name]
           pkg_data['packages'].append(new_pkg)
 
@@ -111,7 +111,7 @@ jobs:
               f.write('IS_PACKAGE=true\n')
               f.write(f'PKG_NAME={name}\n')
               f.write(f'PKG_SHA256={sha256}\n')
-          "
+          EOF
 
       - name: Commit and Push changes
         if: env.IS_PACKAGE == 'true'
