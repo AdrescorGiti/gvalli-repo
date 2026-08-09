@@ -2,11 +2,10 @@ name: Process Package Submission
 
 on:
   issues:
-    types: [opened]
+    types: [opened, edited]
 
 jobs:
   process:
-    if: contains(github.event.issue.labels.*.name, 'package-request')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -20,15 +19,38 @@ jobs:
         uses: stefanbuck/github-issue-parser@v3
         id: issue-parser
 
+      - name: Check if it's a package submission
+        id: check
+        run: |
+          TITLE="${{ github.event.issue.title }}"
+          if [[ "$TITLE" != *"[Package]"* ]]; then
+            echo "Not a package submission issue. Skipping."
+            echo "is_package=false" >> $GITHUB_ENV
+          else
+            echo "is_package=true" >> $GITHUB_ENV
+          fi
+
       - name: Extract Data
+        if: env.is_package == 'true'
         id: data
         run: |
-          echo "NAME=${{ steps.issue-parser.outputs.jsonIssue.parseResult.name }}" >> $GITHUB_ENV
-          echo "VERSION=${{ steps.issue-parser.outputs.jsonIssue.parseResult.version }}" >> $GITHUB_ENV
-          echo "DESC=${{ steps.issue-parser.outputs.jsonIssue.parseResult.description }}" >> $GITHUB_ENV
-          echo "URL=${{ steps.issue-parser.outputs.jsonIssue.parseResult.url }}" >> $GITHUB_ENV
+          NAME=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.name // empty')
+          VERSION=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.version // empty')
+          DESC=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.description // empty')
+          URL=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.url // empty')
+
+          echo "NAME=$NAME" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "DESC=$DESC" >> $GITHUB_ENV
+          echo "URL=$URL" >> $GITHUB_ENV
+          
+          if [ -z "$NAME" ] || [ -z "$URL" ]; then
+            echo "Error: Required fields are missing!"
+            exit 1
+          fi
 
       - name: Download package and calculate SHA256
+        if: env.is_package == 'true'
         run: |
           echo "Downloading package from ${{ env.URL }}..."
           curl -L "${{ env.URL }}" -o package.gpkg
@@ -38,6 +60,7 @@ jobs:
           echo "Calculated SHA256: $SHA256"
 
       - name: Update packages.json
+        if: env.is_package == 'true'
         run: |
           python3 -c "
           import json
@@ -45,7 +68,6 @@ jobs:
 
           json_file = 'packages.json'
           
-          # Читаем существующий файл или создаем структуру, если его нет
           if os.path.exists(json_file):
               with open(json_file, 'r') as f:
                   data = json.load(f)
@@ -60,7 +82,8 @@ jobs:
               'sha256': os.environ['SHA256']
           }
 
-          # Проверяем, нет ли уже такого пакета, и добавляем
+          # Удаляем старую версию пакета, если она уже была, и добавляем актуальную
+          data['packages'] = [p for p in data['packages'] if p['name'] != new_package['name']]
           data['packages'].append(new_package)
 
           with open(json_file, 'w') as f:
@@ -68,12 +91,14 @@ jobs:
           "
 
       - name: Commit and Push changes
+        if: env.is_package == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Add package ${{ env.NAME }} via automated request"
           file_pattern: "packages.json"
 
       - name: Close Issue and Comment
+        if: env.is_package == 'true'
         uses: peter-evans/close-issue@v3
         with:
           comment: |
