@@ -15,92 +15,109 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Parse Issue Body
-        uses: stefanbuck/github-issue-parser@v3
-        id: issue-parser
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-      - name: Check if it's a package submission
-        id: check
-        run: |
-          TITLE="${{ github.event.issue.title }}"
-          if [[ "$TITLE" != *"[Package]"* ]]; then
-            echo "Not a package submission issue. Skipping."
-            echo "is_package=false" >> $GITHUB_ENV
-          else
-            echo "is_package=true" >> $GITHUB_ENV
-          fi
-
-      - name: Extract Data
-        if: env.is_package == 'true'
-        id: data
-        run: |
-          NAME=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.name // empty')
-          VERSION=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.version // empty')
-          DESC=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.description // empty')
-          URL=$(echo '${{ steps.issue-parser.outputs.jsonIssue }}' | jq -r '.parseResult.url // empty')
-
-          echo "NAME=$NAME" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "DESC=$DESC" >> $GITHUB_ENV
-          echo "URL=$URL" >> $GITHUB_ENV
-          
-          if [ -z "$NAME" ] || [ -z "$URL" ]; then
-            echo "Error: Required fields are missing!"
-            exit 1
-          fi
-
-      - name: Download package and calculate SHA256
-        if: env.is_package == 'true'
-        run: |
-          echo "Downloading package from ${{ env.URL }}..."
-          curl -L "${{ env.URL }}" -o package.gpkg
-          
-          SHA256=$(sha256sum package.gpkg | awk '{print $1}')
-          echo "SHA256=$SHA256" >> $GITHUB_ENV
-          echo "Calculated SHA256: $SHA256"
-
-      - name: Update packages.json
-        if: env.is_package == 'true'
+      - name: Process Issue, Download and Update JSON
         run: |
           python3 -c "
-          import json
-          import os
+          import json, os, re, hashlib, urllib.request
 
+          # Читаем исходный файл события GitHub без кавычек и прослоек
+          event_path = os.environ['GITHUB_EVENT_PATH']
+          with open(event_path, 'r', encoding='utf-8') as f:
+              event = json.load(f)
+
+          issue = event.get('issue', {})
+          title = issue.get('title', '')
+          body = issue.get('body', '')
+
+          # Проверяем, что это заявка на пакет
+          if '[Package]' not in title:
+              print('Not a package submission issue. Skipping.')
+              with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+                  f.write('IS_PACKAGE=false\n')
+              exit(0)
+
+          # Парсим разметку формы (### Заголовок \n Значение)
+          sections = re.split(r'###\s+', body)
+          data = {}
+          for sec in sections:
+              if not sec.strip():
+                  continue
+              lines = sec.strip().split('\n')
+              heading = lines[0].strip()
+              value = '\n'.join(lines[1:]).strip()
+              data[heading] = value
+
+          name = data.get('Package Name', '').strip()
+          version = data.get('Version', '').strip()
+          description = data.get('Description', '').strip()
+          url = data.get('Direct Download URL (.gpkg)', '').strip()
+
+          if not name or not url:
+              print(f'Error: Missing required fields. Name: \"{name}\", URL: \"{url}\"')
+              exit(1)
+
+          print(f'Successfully parsed: {name} v{version}')
+
+          # Скачиваем .gpkg файл
+          print(f'Downloading from {url}...')
+          req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+          with urllib.request.urlopen(req) as resp, open('package.gpkg', 'wb') as out:
+              out.write(resp.read())
+
+          # Считаем SHA256
+          hasher = hashlib.sha256()
+          with open('package.gpkg', 'rb') as f:
+              while chunk := f.read(8192):
+                  hasher.update(chunk)
+          sha256 = hasher.hexdigest()
+          print(f'Calculated SHA256: {sha256}')
+
+          # Обновляем packages.json
           json_file = 'packages.json'
-          
           if os.path.exists(json_file):
-              with open(json_file, 'r') as f:
-                  data = json.load(f)
+              with open(json_file, 'r', encoding='utf-8') as f:
+                  pkg_data = json.load(f)
           else:
-              data = {'packages': []}
+              pkg_data = {'packages': []}
 
-          new_package = {
-              'name': os.environ['NAME'],
-              'version': os.environ['VERSION'],
-              'description': os.environ['DESC'],
-              'url': os.environ['URL'],
-              'sha256': os.environ['SHA256']
+          new_pkg = {
+              'name': name,
+              'version': version,
+              'description': description,
+              'url': url,
+              'sha256': sha256
           }
 
-          # Удаляем старую версию пакета, если она уже была, и добавляем актуальную
-          data['packages'] = [p for p in data['packages'] if p['name'] != new_package['name']]
-          data['packages'].append(new_package)
+          # Заменяем старую версию пакета или добавляем новый
+          pkg_data['packages'] = [p for p in pkg_data.get('packages', []) if p['name'] != name]
+          pkg_data['packages'].append(new_pkg)
 
-          with open(json_file, 'w') as f:
-              json.dump(data, f, indent=2)
+          with open(json_file, 'w', encoding='utf-8') as f:
+              json.dump(pkg_data, f, indent=2, ensure_ascii=False)
+
+          # Передаем переменные в след. шаги
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+              f.write('IS_PACKAGE=true\n')
+              f.write(f'PKG_NAME={name}\n')
+              f.write(f'PKG_SHA256={sha256}\n')
           "
 
       - name: Commit and Push changes
-        if: env.is_package == 'true'
+        if: env.IS_PACKAGE == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Add package ${{ env.NAME }} via automated request"
+          commit_message: "Add package ${{ env.PKG_NAME }} via automated request"
           file_pattern: "packages.json"
 
       - name: Close Issue and Comment
-        if: env.is_package == 'true'
+        if: env.IS_PACKAGE == 'true'
         uses: peter-evans/close-issue@v3
         with:
           comment: |
-            🎉 Поздравляем! Ваш пакет **${{ env.NAME }}** успешно добавлен в репозиторий G OS.
-            SHA256: `${{ env.SHA256 }}`
+            🎉 Поздравляем! Ваш пакет **${{ env.PKG_NAME }}** успешно добавлен в репозиторий G OS.
+            SHA256: `${{ env.PKG_SHA256 }}`
