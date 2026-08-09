@@ -10,8 +10,7 @@
 [![Architecture](https://img.shields.io/badge/x86__64-v3_-4ecdc4?style=for-the-badge)](https://github.com)
 [![License](https://img.shields.io/badge/License-MIT-45b7d1?style=for-the-badge)](LICENSE)
 
-[🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specs](#-specification--спецификация) • [🤝 Contributing](#-contributing)
-
+[🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specs / Спецификация](#%EF%B8%8F-specification--спецификация) • [🤝 Contributing](#-contributing)
 ---
 
 ## 🇺🇸 English
