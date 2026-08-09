@@ -1,5 +1,7 @@
 # 📦 GValli Package Repository
 
+<img width="700" height="500" alt="Bahmut" src="https://github.com/user-attachments/assets/1fd4bc19-46dc-41b8-871a-b8e52cfd694d" />
+
 **Официальный репозиторий индексов и дистрибуции пакетов для экосистемы G OS**
 
 [![GValli Ecosystem](https://img.shields.io/badge/G-Operating_System-6f42c1?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/AdrescorGiti/GValli)
