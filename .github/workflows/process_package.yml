@@ -25,7 +25,7 @@ jobs:
       - name: Process Issue, Scan Security, and Update JSON
         run: |
           cat << 'EOF' > script.py
-          import json, os, re, hashlib, urllib.request, tarfile, shutil
+          import json, os, re, hashlib, subprocess, tarfile, shutil
 
           # 1. Чтение события GitHub
           event_path = os.environ['GITHUB_EVENT_PATH']
@@ -64,10 +64,10 @@ jobs:
               print('Error: Missing required fields.')
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
-                  f.write(f'PKG_NAME={name or "Unknown"}\nMALWARE_REASON=Заполнены не все обязательные поля (Package Name или URL).\n')
+                  f.write(f'PKG_NAME={name or "Unknown"}\nMALWARE_REASON=Заполнены не все обязательные поля.\n')
               exit(0)
 
-          # Чтение файла индекса (автопоиск packages.json / pakages.json)
+          # Поиск файла индекса
           json_file = 'packages.json' if os.path.exists('packages.json') else 'pakages.json' if os.path.exists('pakages.json') else 'packages.json'
           pkg_data = {'packages': []}
           if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
@@ -79,33 +79,28 @@ jobs:
                       elif isinstance(loaded, list):
                           pkg_data = {'packages': loaded}
               except Exception as e:
-                  print(f'Warning: JSON read error ({e}). Re-initializing.')
+                  print(f'Warning: JSON read error ({e}).')
 
           # 2. ПРОВЕРКА ПРАВ СОЗДАТЕЛЯ
           existing_pkg = next((p for p in pkg_data.get('packages', []) if p.get('name') == name), None)
           if existing_pkg:
               original_creator = existing_pkg.get('creator', '')
               if original_creator and original_creator.lower() != issue_author.lower():
-                  print(f'Unauthorized update attempt by @{issue_author} for package owned by @{original_creator}')
+                  print(f'Unauthorized attempt by @{issue_author}')
                   with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                       f.write('IS_PACKAGE=true\nUNAUTHORIZED=true\nMALWARE=false\n')
                       f.write(f'PKG_NAME={name}\nORIGINAL_CREATOR={original_creator}\n')
                   exit(0)
 
-          # 3. НАДЕЖНОЕ СКАЧИВАНИЕ С USER-AGENT
-          print(f"Downloading {url}...")
-          try:
-              req = urllib.request.Request(
-                  url, 
-                  headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0'}
-              )
-              with urllib.request.urlopen(req) as resp, open('package.gpkg', 'wb') as out:
-                  out.write(resp.read())
-          except Exception as e:
-              print(f"Download error: {e}")
+          # 3. НАДЕЖНОЕ СКАЧИВАНИЕ ЧЕРЕЗ CURL (ПРОБИВАЕТ 302 РЕДИРЕКТЫ GITHUB RELEASES)
+          print(f"Downloading {url} via curl...")
+          curl_cmd = ["curl", "-sSL", "-A", "Mozilla/5.0 (X11; Linux x86_64)", "-o", "package.gpkg", url]
+          res = subprocess.run(curl_cmd, capture_output=True)
+
+          if res.returncode != 0 or not os.path.exists('package.gpkg') or os.path.getsize('package.gpkg') == 0:
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
-                  f.write(f'PKG_NAME={name}\nMALWARE_REASON=Не удалось скачать файл по указанному URL ({e})\n')
+                  f.write(f'PKG_NAME={name}\nMALWARE_REASON=Ошибка скачивания файла по указанной ссылке.\n')
               exit(0)
 
           # 4. АНТИВИРУСНЫЙ СКАНЕР И ПРОВЕРКА ЦЕЛОСТНОСТИ
@@ -120,21 +115,31 @@ jobs:
           malware_reason = ""
           extract_dir = "extract_eval"
           
-          # Распаковка и защита от Zip-Slip
-          try:
-              with tarfile.open('package.gpkg', "r:*") as tar:
-                  for member in tar.getmembers():
-                      if member.name.startswith("/") or "../" in member.name:
-                          is_clean = False
-                          malware_reason = f"ZIP-SLIP АТАКА (Path Traversal) в файле {member.name}"
-                          break
-                  if is_clean:
-                      tar.extractall(path=extract_dir)
-          except Exception as e:
-              is_clean = False
-              malware_reason = f"Файл по ссылке не является валидным архивом .gpkg (ошибка распаковки: {e})"
+          # Проверка на HTML вместо архива
+          with open('package.gpkg', 'rb') as f:
+              header = f.read(200)
+              if b'<!DOCTYPE html>' in header or b'<html' in header.lower():
+                  is_clean = False
+                  malware_reason = "По ссылке скачалась HTML-страница ошибки/редиректа вместо файла .gpkg."
 
-          # Пофайловое сканирование на бэкдоры
+          # Распаковка и проверка Zip-Slip
+          if is_clean:
+              try:
+                  with tarfile.open('package.gpkg', "r:*") as tar:
+                      for member in tar.getmembers():
+                          if member.name.startswith("/") or "../" in member.name:
+                              is_clean = False
+                              malware_reason = f"ZIP-SLIP АТАКА в файле {member.name}"
+                              break
+                      if is_clean:
+                          tar.extractall(path=extract_dir)
+              except Exception as e:
+                  is_clean = False
+                  # Очищаем причину от переносов строк, чтобы не ломать GITHUB_ENV
+                  clean_err = str(e).replace('\n', ' ').replace('\r', ' ')
+                  malware_reason = f"Файл не является валидным архивом .gpkg ({clean_err})"
+
+          # Пофайловый анализ
           if is_clean:
               for root, _, files in os.walk(extract_dir):
                   for file in files:
@@ -144,22 +149,23 @@ jobs:
                               for danger in BLACKLIST:
                                   if danger in content:
                                       is_clean = False
-                                      malware_reason = f"Вредоносная команда/бэкдор ({danger.decode('utf-8', errors='ignore')}) найдена в файле {file}"
+                                      malware_reason = f"Вредоносный код ({danger.decode('utf-8', errors='ignore')}) в файле {file}"
                                       break
                       except Exception as e:
-                          print(f"Read error for file {file}: {e}")
+                          print(f"Read error: {e}")
                       if not is_clean: break
                   if not is_clean: break
 
-          # Очистка временной папки
           if os.path.exists(extract_dir):
               shutil.rmtree(extract_dir)
 
           if not is_clean:
-              print(f"Security/Archive error: {malware_reason}")
+              # ВАЖНО: удаляем переводы строк из причины для безопасности GITHUB_ENV
+              safe_reason = malware_reason.replace('\n', ' ').replace('\r', ' ')
+              print(f"Security/Archive error: {safe_reason}")
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
-                  f.write(f'PKG_NAME={name}\nMALWARE_REASON={malware_reason}\n')
+                  f.write(f'PKG_NAME={name}\nMALWARE_REASON={safe_reason}\n')
               exit(0)
 
           # 5. ХЕШ И ОБНОВЛЕНИЕ JSON
@@ -229,4 +235,5 @@ jobs:
             **Причина:**
             > ${{ env.MALWARE_REASON }}
             
-            Пакет **НЕ БЫЛ** добавлен в базу. Проверьте валидность файла и повторите попытку.
+            Пакет **НЕ БЫЛ** добавлен в базу. Проверьте ссылку и целостность архива.
+            
