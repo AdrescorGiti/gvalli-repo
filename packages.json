@@ -48,6 +48,17 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/tdesktop-gpkg/releases/download/v.1.2.7/64gram_1.2.7_amd64.gpkg",
       "sha256": "b16e786339abb64ac0a24b9039ab2e64cfdeb59fe549ce2700ecbdfee5750e35"
+    },
+    {
+      "name": "vtest",
+      "version": "0.1.0",
+      "description": "Easy antivirus for G OS",
+      "creator": "AdrescorGiti",
+      "dependencies": [
+        "gvalli"
+      ],
+      "url": "https://github.com/AdrescorGiti/gvalli-repo/raw/refs/heads/main/vtest-0.1.0.gpkg",
+      "sha256": "dd0da68c6ede8d28fde1f3276528f28814363493ed35190f147cc91cf133c179"
     }
   ]
 }
