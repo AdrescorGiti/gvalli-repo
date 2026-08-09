@@ -1,17 +1,17 @@
-<div align="center">
-
 # 📦 GValli Package Repository
+
+<div align="center">
 
 <img width="260" alt="GValli Logo" src="https://github.com/user-attachments/assets/b64078b2-4f17-49c0-bb3b-9851940f9630" />
 
 ### Официальный репозиторий индексов и дистрибуции пакетов для экосистемы G OS
 
 [![GValli Ecosystem](https://img.shields.io/badge/G-Operating_System-6f42c1?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/AdrescorGiti/GValli)
-[![Package Format](https://img.shields.io/badge/Package_Format-.gpkg-ff6b6b?style=for-the-badge)](https://github.com)
-[![Architecture](https://img.shields.io/badge/x86__64-v3_-4ecdc4?style=for-the-badge)](https://github.com)
+[![Package Format](https://img.shields.io/badge/Package_Format-.gpkg-ff6b6b?style=for-the-badge)](https://github.com/AdrescorGiti/GValli)
+[![Architecture](https://img.shields.io/badge/x86__64-v3_-4ecdc4?style=for-the-badge)](https://github.com/AdrescorGiti/GValli)
 [![License](https://img.shields.io/badge/License-MIT-45b7d1?style=for-the-badge)](LICENSE)
 
-[🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specs / Спецификация](#%EF%B8%8F-specification--спецификация) • [🤝 Contributing](#-contributing)
+[🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specification](#%EF%B8%8F-specification) • [🤝 Contributing](#-contributing)
 
 </div>
 
@@ -30,7 +30,7 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 | **🔐 Cryptographic Integrity** | Mandatory SHA-256 verification before extraction to guarantee binary safety. |
 | **🔄 Seamless Automation** | Built-in CLI sync (`gvalli update`) for effortless package index updates. |
 
-### 🛠️ Architecture Flow (English)
+### 🛠️ Architecture Flow
 
 ```text
 ┌─────────────────────────┐          1. Sync Catalog (`packages.json`)         ┌──────────────────────────────────┐
@@ -52,7 +52,6 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 │  (/usr/bin, /usr/lib)   │
 └─────────────────────────┘
 ```
-
 
 ### 🚀 Quick Start
 
@@ -80,7 +79,8 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 | **🔐 Гарантия безопасности** | Обязательная проверка контрольных сумм SHA-256 перед распаковкой каждого файла. |
 | **🔄 Простая автоматизация** | Синхронизация каталога одной командой (`gvalli update`). |
 
-### 🛠️ Схема архитектуры (Русский)
+### 🛠️ Схема архитектуры
+
 ```text
 ┌─────────────────────────┐         1. Синхронизация индекса (`packages.json`) ┌──────────────────────────────────┐
 │                         │ ─────────────────────────────────────────────────> │     Центральный репозиторий      │
@@ -102,8 +102,6 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 └─────────────────────────┘
 ```
 
-
-
 ### 🚀 Быстрый старт
 
 	# 1. Обновление локального индекса пакетов
@@ -117,15 +115,14 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 
 ---
 
-
-## ⚙️ Specification / Спецификация
+## ⚙️ Specification
 
 ### Package Index Schema (`packages.json`)
 
-The entire repository relies on a validated JSON schema for cataloging available software.
+The entire repository relies on a validated, strictly typed JSON schema for indexing and distributing software across the **G OS** ecosystem.
 
 <details>
-<summary>🔍 Click to view example <code>packages.json</code></summary>
+<summary>🔍 Click to expand example <code>packages.json</code> specification</summary>
 
 ```json
 {
@@ -149,15 +146,37 @@ The entire repository relies on a validated JSON schema for cataloging available
   ]
 }
 ```
+</details>
+
+### Repository Layout
+
+```text
+.
+├── .github/
+│   └── workflows/
+│       └── process_package.yml  # Auto-upload .gpkg to GitHub Releases 
+├── packages.json                # Master database index 
+└── README.md                    # Documentation hub 
+```
+
 ---
 
 ## 🤝 Contributing
 
-We welcome community contributions! You can help by:
-1. Packaging new utilities into `.gpkg` archives.
-2. Reporting broken download links or add your `.gpkg`  via [Issues](../../issues).
-3. Help with G OS soft
+We actively welcome community contributions to expand and maintain the **G OS** package index! 
+
+### How you can help:
+
+* **📦 Package Creation:** Build and archive missing software into official `.gpkg` bundles for `x86_64-v3`.
+* **🐛 Issue Reporting:** Notify the team about broken binary URLs or outdated metadata via [GitHub Issues](../../issues).
+* **⚙️ Core Ecosystem:** Submit Pull Requests to improve deployment workflows, automated CI/CD checks, and index structure.
+
+> **Note:** Please verify package cryptographic checksums (SHA-256) locally prior to submitting a PR.
 
 ---
 
+<div align="center">
+
 *Crafted with ❤️ for the **G Operating System***
+
+</div>
