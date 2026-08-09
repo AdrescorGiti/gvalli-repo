@@ -1,9 +1,10 @@
+<div align="center">
+
 # 📦 GValli Package Repository
 
-<img width="300" height="275" alt="Gemini_Generated_Image_5tahh25tahh25tah-no-bg-preview (carve photos)" src="https://github.com/user-attachments/assets/b64078b2-4f17-49c0-bb3b-9851940f9630" />
+<img width="260" alt="GValli Logo" src="https://github.com/user-attachments/assets/b64078b2-4f17-49c0-bb3b-9851940f9630" />
 
-
-**Официальный репозиторий индексов и дистрибуции пакетов для экосистемы G OS**
+### Официальный репозиторий индексов и дистрибуции пакетов для экосистемы G OS
 
 [![GValli Ecosystem](https://img.shields.io/badge/G-Operating_System-6f42c1?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/AdrescorGiti/GValli)
 [![Package Format](https://img.shields.io/badge/Package_Format-.gpkg-ff6b6b?style=for-the-badge)](https://github.com)
@@ -11,6 +12,9 @@
 [![License](https://img.shields.io/badge/License-MIT-45b7d1?style=for-the-badge)](LICENSE)
 
 [🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specs / Спецификация](#%EF%B8%8F-specification--спецификация) • [🤝 Contributing](#-contributing)
+
+</div>
+
 ---
 
 ## 🇺🇸 English
@@ -28,17 +32,18 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 
 ### 🛠️ Architecture Flow
 
-┌─────────────────┐       1. Sync Catalog        ┌────────────────────────┐
-│   GValli CLI    │ ───────────────────────────> │       index.json       │
-│ (gvalli update) │ <─────────────────────────── │  (Central Repository)  │
-└────────┬────────┘       2. Parse Metadata      └────────────────────────┘
+```text
+┌─────────────────┐        1. Sync Catalog        ┌────────────────────────┐
+│    GValli CLI   │ ───────────────────────────>  │       index.json       │
+│ (gvalli update) │ <───────────────────────────  │  (Central Repository)  │
+└────────┬────────┘        2. Parse Metadata      └────────────────────────┘
          │
          │ 3. Download .gpkg (HTTPS)
          ▼
-┌─────────────────┐       4. SHA256 Checksum     ┌────────────────────────┐
-│ GitHub Releases │ ───────────────────────────> │ Target System Path     │
-│ (Binary Assets) │       5. Safe Unpack         │ (/usr/bin, /usr/lib)   │
-└─────────────────┘                              └────────────────────────┘
+┌─────────────────┐        4. SHA256 Checksum     ┌────────────────────────┐
+│ GitHub Releases │ ───────────────────────────>  │   Target System Path   │
+│ (Binary Assets) │        5. Safe Unpack         │  (/usr/bin, /usr/lib)  │
+└─────────────────┘                               └────────────────────────┘
 
 ### 🚀 Quick Start
 
@@ -98,8 +103,8 @@ The entire repository relies on a validated JSON schema for cataloging available
       "architecture": "x86_64",
       "description": "CLI system information tool written in bash",
       "category": "utils",
-      "homepage": "[https://github.com/dylanaraps/neofetch](https://github.com/dylanaraps/neofetch)",
-      "download_url": "[https://github.com/gvalli-os/packages/releases/download/v7.1.0/neofetch-7.1.0-x86_64.gpkg](https://github.com/gvalli-os/packages/releases/download/v7.1.0/neofetch-7.1.0-x86_64.gpkg)",
+      "homepage": "https://github.com/dylanaraps/neofetch",
+      "download_url": "https://github.com/gvalli-os/packages/releases/download/v7.1.0/neofetch-7.1.0-x86_64.gpkg",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size_bytes": 34812,
       "dependencies": ["bash"]
