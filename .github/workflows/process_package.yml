@@ -1,0 +1,81 @@
+name: Process Package Submission
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process:
+    if: contains(github.event.issue.labels.*.name, 'package-request')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse Issue Body
+        uses: stefanbuck/github-issue-parser@v3
+        id: issue-parser
+
+      - name: Extract Data
+        id: data
+        run: |
+          echo "NAME=${{ steps.issue-parser.outputs.jsonIssue.parseResult.name }}" >> $GITHUB_ENV
+          echo "VERSION=${{ steps.issue-parser.outputs.jsonIssue.parseResult.version }}" >> $GITHUB_ENV
+          echo "DESC=${{ steps.issue-parser.outputs.jsonIssue.parseResult.description }}" >> $GITHUB_ENV
+          echo "URL=${{ steps.issue-parser.outputs.jsonIssue.parseResult.url }}" >> $GITHUB_ENV
+
+      - name: Download package and calculate SHA256
+        run: |
+          echo "Downloading package from ${{ env.URL }}..."
+          curl -L "${{ env.URL }}" -o package.gpkg
+          
+          SHA256=$(sha256sum package.gpkg | awk '{print $1}')
+          echo "SHA256=$SHA256" >> $GITHUB_ENV
+          echo "Calculated SHA256: $SHA256"
+
+      - name: Update packages.json
+        run: |
+          python3 -c "
+          import json
+          import os
+
+          json_file = 'packages.json'
+          
+          # Читаем существующий файл или создаем структуру, если его нет
+          if os.path.exists(json_file):
+              with open(json_file, 'r') as f:
+                  data = json.load(f)
+          else:
+              data = {'packages': []}
+
+          new_package = {
+              'name': os.environ['NAME'],
+              'version': os.environ['VERSION'],
+              'description': os.environ['DESC'],
+              'url': os.environ['URL'],
+              'sha256': os.environ['SHA256']
+          }
+
+          # Проверяем, нет ли уже такого пакета, и добавляем
+          data['packages'].append(new_package)
+
+          with open(json_file, 'w') as f:
+              json.dump(data, f, indent=2)
+          "
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Add package ${{ env.NAME }} via automated request"
+          file_pattern: "packages.json"
+
+      - name: Close Issue and Comment
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: |
+            🎉 Поздравляем! Ваш пакет **${{ env.NAME }}** успешно добавлен в репозиторий G OS.
+            SHA256: `${{ env.SHA256 }}`
