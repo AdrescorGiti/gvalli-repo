@@ -30,21 +30,29 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 | **🔐 Cryptographic Integrity** | Mandatory SHA-256 verification before extraction to guarantee binary safety. |
 | **🔄 Seamless Automation** | Built-in CLI sync (`gvalli update`) for effortless package index updates. |
 
-### 🛠️ Architecture Flow
+### 🛠️ Architecture Flow (English)
 
 ```text
-┌─────────────────┐        1. Sync Catalog        ┌────────────────────────┐
-│    GValli CLI   │ ───────────────────────────>  │       index.json       │
-│ (gvalli update) │ <───────────────────────────  │  (Central Repository)  │
-└────────┬────────┘        2. Parse Metadata      └────────────────────────┘
-         │
-         │ 3. Download .gpkg (HTTPS)
-         ▼
-┌─────────────────┐        4. SHA256 Checksum     ┌────────────────────────┐
-│ GitHub Releases │ ───────────────────────────>  │   Target System Path   │
-│ (Binary Assets) │        5. Safe Unpack         │  (/usr/bin, /usr/lib)  │
-└─────────────────┘                               └────────────────────────┘
+┌─────────────────────────┐          1. Sync Catalog (`packages.json`)         ┌──────────────────────────────────┐
+│                         │ ─────────────────────────────────────────────────> │     GitHub Repository Catalog    │
+│                         │ <───────────────────────────────────────────────── │    (AdrescorGiti/GValli Index)   │
+│       GValli CLI        │          2. Parse Metadata & Check URL             └──────────────────────────────────┘
+│     (gvalli update /    │
+│     gvalli install)     │          3. Fetch `.gpkg` Binary Release
+│                         │ ─────────────────────────────────────────────────> ┌──────────────────────────────────┐
+│                         │ <───────────────────────────────────────────────── │    GitHub Releases Storage       │
+│                         │          4. Download Asset (HTTPS)                 │   (Hosted Binary Assets)         │
+└────────────┬────────────┘                                                    └──────────────────────────────────┘
+             │
+             │ 5. SHA-256 Checksum Verification
+             │ 6. Safe Extraction & Installation
+             ▼
+┌─────────────────────────┐
+│   Target System Paths   │
+│  (/usr/bin, /usr/lib)   │
+└─────────────────────────┘
 ```
+
 
 ### 🚀 Quick Start
 
@@ -71,6 +79,30 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 | **📦 Чистая история Git** | Исполняемые `.gpkg` архивы хранятся в **GitHub Releases**, что спасает репозиторий от раздувания. |
 | **🔐 Гарантия безопасности** | Обязательная проверка контрольных сумм SHA-256 перед распаковкой каждого файла. |
 | **🔄 Простая автоматизация** | Синхронизация каталога одной командой (`gvalli update`). |
+
+### 🛠️ Схема архитектуры (Русский)
+```text
+┌─────────────────────────┐         1. Синхронизация индекса (`packages.json`) ┌──────────────────────────────────┐
+│                         │ ─────────────────────────────────────────────────> │     Центральный репозиторий      │
+│                         │ <───────────────────────────────────────────────── │   (Индекс AdrescorGiti/GValli)   │
+│       GValli CLI        │         2. Парсинг метаданных и ссылок             └──────────────────────────────────┘
+│     (gvalli update /    │
+│     gvalli install)     │         3. Запрос `.gpkg` архива
+│                         │ ─────────────────────────────────────────────────> ┌──────────────────────────────────┐
+│                         │ <───────────────────────────────────────────────── │     GitHub Releases Хранилище    │
+│                         │         4. Загрузка файла (HTTPS)                  │    (Готовые бинарные сборки)     │
+└────────────┬────────────┘                                                    └──────────────────────────────────┘
+             │
+             │ 5. Проверка хеш-суммы SHA-256
+             │ 6. Безопасная распаковка и установка
+             ▼
+┌─────────────────────────┐
+│  Системные директории   │
+│  (/usr/bin, /usr/lib)   │
+└─────────────────────────┘
+```
+
+
 
 ### 🚀 Быстрый старт
 
