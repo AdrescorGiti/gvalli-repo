@@ -43,7 +43,7 @@ jobs:
                   f.write('IS_PACKAGE=false\n')
               exit(0)
 
-          # Парсинг Issue
+          # Парсинг формы Issue
           sections = re.split(r'###\s+', body)
           data = {}
           for sec in sections:
@@ -66,7 +66,7 @@ jobs:
                   f.write(f'PKG_NAME={name or "Unknown"}\nMALWARE_REASON=Заполнены не все обязательные поля.\n')
               exit(0)
 
-          # Чтение JSON
+          # Поиск индексного файла
           json_file = 'packages.json' if os.path.exists('packages.json') else 'pakages.json' if os.path.exists('pakages.json') else 'packages.json'
           pkg_data = {'packages': []}
           if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
@@ -99,12 +99,12 @@ jobs:
           if res.returncode != 0 or not os.path.exists('package.gpkg') or os.path.getsize('package.gpkg') == 0:
               with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
                   f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
-                  f.write(f'PKG_NAME={name}\nMALWARE_REASON=Не удалось скачать файл (HTTP error или битая ссылка).\n')
+                  f.write(f'PKG_NAME={name}\nMALWARE_REASON=Не удалось скачать файл (HTTP 404 или битая ссылка).\n')
               exit(0)
 
-          # 4. РАСПАКОВКА D2G (ПОДДЕРЖКА ZSTD / TAR / ZIP)
+          # 4. РАСПАКОВКА И БЕЗОПАСНОСТЬ (D2G / ZSTD / TAR / ZIP)
           BLACKLIST = [
-              b"rm -rf /", b"sudo rm -rf", b"mkfs", b"wipefs", b"dd if=", b"> /etc/passwd",
+              b"rm -rf /", b"sudo rm -rf", b"mkfs.", b"mkfs ", b"wipefs", b"dd if=", b"> /etc/passwd",
               b"> /etc/shadow", b"> /etc/sudoers", b"chmod 777 /", b"chmod -R 777 /",
               b"bash -i", b"nc -e", b"nc -c", b"/dev/tcp/", b"/dev/udp/",
               b"curl | bash", b"curl | sh", b"wget -qO- | sh", b"base64 -d | sh"
@@ -115,11 +115,10 @@ jobs:
           extract_dir = "extract_eval"
           os.makedirs(extract_dir, exist_ok=True)
 
-          # Пробуем системный tar (поддерживает .zst, .gz, .xz, .bz2)
+          # Системная распаковка (поддержка zstd, tar, zip)
           res_tar = subprocess.run(["tar", "-xf", "package.gpkg", "-C", extract_dir], capture_output=True)
           unpacked = (res_tar.returncode == 0)
 
-          # Если не tar, пробуем unzip
           if not unpacked:
               res_zip = subprocess.run(["unzip", "-q", "-o", "package.gpkg", "-d", extract_dir], capture_output=True)
               unpacked = (res_zip.returncode == 0)
@@ -128,7 +127,7 @@ jobs:
               is_clean = False
               malware_reason = "Не удалось распаковать .gpkg (неподдерживаемый архив или поврежденный файл)."
 
-          # Пофайловый анализ на вирусы и Zip-Slip
+          # Пофайловый анализ
           if is_clean:
               for root, dirs, files in os.walk(extract_dir):
                   rel_root = os.path.relpath(root, extract_dir)
@@ -147,11 +146,18 @@ jobs:
                       try:
                           with open(file_path, "rb") as f:
                               content = f.read()
-                              for danger in BLACKLIST:
-                                  if danger in content:
-                                      is_clean = False
-                                      malware_reason = f"Вредоносный код ({danger.decode('utf-8', errors='ignore')}) в файле {file}"
-                                      break
+                              
+                              # Проверяем сигнатуру ELF-бинарников (\x7fELF).
+                              # В бинарниках поиск строковых bash-команд отключается, 
+                              # чтобы избежать ложных срабатываний на таблицы символов C++/Qt.
+                              is_elf = content.startswith(b"\x7fELF")
+                              
+                              if not is_elf:
+                                  for danger in BLACKLIST:
+                                      if danger in content:
+                                          is_clean = False
+                                          malware_reason = f"Вредоносный код ({danger.decode('utf-8', errors='ignore')}) в скрипте {file}"
+                                          break
                       except Exception as e:
                           print(f"Read error for {file}: {e}")
 
@@ -169,7 +175,7 @@ jobs:
                   f.write(f'PKG_NAME={name}\nMALWARE_REASON={safe_reason}\n')
               exit(0)
 
-          # 5. РАСЧЕТ SHA256 И ЗАПИСЬ
+          # 5. ХЕШ И ОБНОВЛЕНИЕ JSON
           hasher = hashlib.sha256()
           with open('package.gpkg', 'rb') as f:
               while chunk := f.read(8192): hasher.update(chunk)
@@ -226,6 +232,16 @@ jobs:
             Только первоначальный создатель пакета может публиковать для него обновления.
 
       - name: Comment and Close (Security / Archive Error)
+        if: env.IS_PACKAGE == 'true' && env.MALWARE == 'true'
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: |
+            🛑 **ОШИБКА ПРОВЕРКИ ИЛИ БЛОКИРОВКА ПАКЕТА!**
+            Пакет **${{ env.PKG_NAME }}** был отклонен сканером GValli Sentinel.
+            
+            **Причина:**
+            > ${{ env.MALWARE_REASON }}
+rror)
         if: env.IS_PACKAGE == 'true' && env.MALWARE == 'true'
         uses: peter-evans/close-issue@v3
         with:
