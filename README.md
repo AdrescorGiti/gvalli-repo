@@ -1,6 +1,6 @@
 # 📦 GValli Package Repository
 
-<img width="500" height="350" alt="Bahmut" src="https://github.com/user-attachments/assets/1fd4bc19-46dc-41b8-871a-b8e52cfd694d" />
+<img width="400" height="350" alt="Bahmut" src="https://github.com/user-attachments/assets/1fd4bc19-46dc-41b8-871a-b8e52cfd694d" />
 
 **Официальный репозиторий индексов и дистрибуции пакетов для экосистемы G OS**
 
