@@ -25,7 +25,7 @@ jobs:
           python3 -c "
           import json, os, re, hashlib, urllib.request
 
-          # Читаем исходный файл события GitHub без кавычек и прослоек
+          # Читаем исходный файл события GitHub
           event_path = os.environ['GITHUB_EVENT_PATH']
           with open(event_path, 'r', encoding='utf-8') as f:
               event = json.load(f)
@@ -77,16 +77,19 @@ jobs:
           sha256 = hasher.hexdigest()
           print(f'Calculated SHA256: {sha256}')
 
-          # Обновляем packages.json (ИСПРАВЛЕНЫ ОТСТУПЫ)
+          # Гарантированно безопасное чтение/инициализация packages.json
           json_file = 'packages.json'
-          if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
-              with open(json_file, 'r', encoding='utf-8') as f:
-                  try:
-                      pkg_data = json.load(f)
-                  except Exception:
-                      pkg_data = {'packages': []}
-          else:
-              pkg_data = {'packages': []}
+          pkg_data = {'packages': []}
+
+          if os.path.exists(json_file):
+              try:
+                  with open(json_file, 'r', encoding='utf-8') as f:
+                      loaded = json.load(f)
+                      if isinstance(loaded, dict) and 'packages' in loaded and isinstance(loaded['packages'], list):
+                          pkg_data = loaded
+              except Exception as e:
+                  print(f'Warning: Could not parse {json_file} ({e}). Re-initializing.')
+                  pkg_data = {'packages': []}
 
           new_pkg = {
               'name': name,
@@ -96,14 +99,14 @@ jobs:
               'sha256': sha256
           }
 
-          # Заменяем старую версию пакета или добавляем новый
-          pkg_data['packages'] = [p for p in pkg_data.get('packages', []) if p['name'] != name]
+          # Обновляем или добавляем пакет в список
+          pkg_data['packages'] = [p for p in pkg_data.get('packages', []) if p.get('name') != name]
           pkg_data['packages'].append(new_pkg)
 
           with open(json_file, 'w', encoding='utf-8') as f:
               json.dump(pkg_data, f, indent=2, ensure_ascii=False)
 
-          # Передаем переменные в след. шаги
+          # Передаем переменные в следующие шаги
           with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
               f.write('IS_PACKAGE=true\n')
               f.write(f'PKG_NAME={name}\n')
