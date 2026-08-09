@@ -4,6 +4,8 @@
       "name": "glavo",
       "version": "0.1.0 Stable",
       "description": "Official G OS terminal",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
       "url": "https://github.com/AdrescorGiti/Glavo/releases/download/v.0.1.0/glavo-0.1.0.gpkg",
       "sha256": "978738613f37044bc013acccfbffa97e97bb077dde78a59e07978d54fdfb5d45"
     },
@@ -11,6 +13,10 @@
       "name": "gpkg-manager",
       "version": "1",
       "description": "Manager of gpkg packages",
+      "creator": "AdrescorGiti",
+      "dependencies": [
+        "gvalli"
+      ],
       "url": "https://github.com/AdrescorGiti/gpkg-manager/releases/download/v.1.0/gpkg-manager-0.1.0.gpkg",
       "sha256": "f5cb1431b5722cc20605e1357ff667519f7c5ee470042005c78c31a3276cb98a"
     },
@@ -18,6 +24,8 @@
       "name": "gvalli",
       "version": "0.2.0",
       "description": "gvalli is a lightweight, ultra-fast CLI package manager built in Rust for G OS, designed to seamlessly build, install, and manage .gpkg software packages.",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
       "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.2.0/gvalli-0.2.0.gpkg",
       "sha256": "740bdabed92d08360bc8739b8d3cbbb63bcb945b8d6874e3b063b738f13a95ab"
     },
@@ -25,6 +33,10 @@
       "name": "d2g",
       "version": "1.0.0",
       "description": "deb2gpkg is a utility designed to convert Debian packages (.deb) into native G OS packages (.gpkg).",
+      "creator": "AdrescorGiti",
+      "dependencies": [
+        "gvalli"
+      ],
       "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v1.0/d2g-1.0.gpkg",
       "sha256": "c091859e5a099280ee30340d775ab25c9bfa2cf768b7db23d5f78f860cfbb32b"
     }
