@@ -2,7 +2,7 @@
 
 **Официальный репозиторий индексов и дистрибуции пакетов для экосистемы ОС GValli**
 
-[![GValli Ecosystem](https://img.shields.io/badge/GValli-OS_Ecosystem-6f42c1?style=for-the-badge&logo=linux&logoColor=white)](https://github.com)
+[![GValli Ecosystem](https://img.shields.io/badge/GValli-OS_Ecosystem-6f42c1?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/AdrescorGiti/GValli)
 [![Package Format](https://img.shields.io/badge/Package_Format-.gpkg-ff6b6b?style=for-the-badge)](https://github.com)
 [![Architecture](https://img.shields.io/badge/Arch-x86__64_%7C_aarch64-4ecdc4?style=for-the-badge)](https://github.com)
 [![License](https://img.shields.io/badge/License-MIT-45b7d1?style=for-the-badge)](LICENSE)
