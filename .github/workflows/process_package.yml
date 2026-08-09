@@ -77,11 +77,14 @@ jobs:
           sha256 = hasher.hexdigest()
           print(f'Calculated SHA256: {sha256}')
 
-          # Обновляем packages.json
+          # Обновляем packages.json (ИСПРАВЛЕНЫ ОТСТУПЫ)
           json_file = 'packages.json'
-          if os.path.exists(json_file):
+          if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
               with open(json_file, 'r', encoding='utf-8') as f:
-                  pkg_data = json.load(f)
+                  try:
+                      pkg_data = json.load(f)
+                  except Exception:
+                      pkg_data = {'packages': []}
           else:
               pkg_data = {'packages': []}
 
