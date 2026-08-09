@@ -15,7 +15,7 @@
 
 ## 🇺🇸 English
 
-The **GValli Package Repository** is a high-performance, decentralized package catalog designed specifically for the GValli Linux distribution. It handles metadata indexing, package resolution, and secure binary delivery using custom `.gpkg` bundles.
+The **GValli Package Repository** is a high-performance, decentralized package catalog designed specifically for the G OS distribution. It handles metadata indexing, package resolution, and secure binary delivery using custom `.gpkg` bundles.
 
 ### 🌟 Highlights
 
@@ -55,7 +55,7 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 
 ## 🇷🇺 Русский
 
-**GValli Package Repository** — это централизованный каталог метаданных и индекс дистрибуции программного обеспечения для операционной системы GValli. Система обеспечивает молниеносный поиск, проверку целостности и безопасную установку бинарных пакетов `.gpkg`.
+**GValli Package Repository** — это централизованный каталог метаданных и индекс дистрибуции программного обеспечения для G OS. Система обеспечивает молниеносный поиск, проверку целостности и безопасную установку бинарных пакетов `.gpkg`.
 
 ### 🌟 Ключевые преимущества
 
