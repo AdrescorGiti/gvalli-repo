@@ -1,29 +1,133 @@
-# GValli Package Repository
+# 📦 GValli Package Repository
 
-Official package repository for GValli, designed to store, manage, and distribute .gpkg software packages.
+**Официальный репозиторий индексов и дистрибуции пакетов для экосистемы ОС GValli**
 
-🇺🇸 English
-Features
-Fast Package Search: Powered by a centralized index.json catalog for lightning-fast queries via the CLI (GValli search).
+[![GValli Ecosystem](https://img.shields.io/badge/GValli-OS_Ecosystem-6f42c1?style=for-the-badge&logo=linux&logoColor=white)](https://github.com)
+[![Package Format](https://img.shields.io/badge/Package_Format-.gpkg-ff6b6b?style=for-the-badge)](https://github.com)
+[![Architecture](https://img.shields.io/badge/Arch-x86__64_%7C_aarch64-4ecdc4?style=for-the-badge)](https://github.com)
+[![License](https://img.shields.io/badge/License-MIT-45b7d1?style=for-the-badge)](LICENSE)
 
-Release-Hosted Binaries: .gpkg files are stored securely via GitHub Releases to prevent repository bloat.
+[🌐 English](#-english) • [🌐 Русский](#-русский) • [⚙️ Specs](#-specification--спецификация) • [🤝 Contributing](#-contributing)
 
-Automated Installation: Fully compatible with GValli gpkg install <package_name> for automated downloading, verification, and unpacking.
+---
 
-Repository Structure
-index.json — The package index database containing metadata, versions, download URLs, and checksums.
+## 🇺🇸 English
 
-GitHub Releases — Storage for compiled .gpkg archive files.
+The **GValli Package Repository** is a high-performance, decentralized package catalog designed specifically for the GValli Linux distribution. It handles metadata indexing, package resolution, and secure binary delivery using custom `.gpkg` bundles.
 
-🇷🇺 Русский
-Особенности
-Быстрый поиск пакетов: Работает на основе централизованного каталога index.json для мгновенного поиска через CLI (GValli search).
+### 🌟 Highlights
 
-Хранение через Releases: Сами файлы .gpkg хранятся в разделе GitHub Releases, чтобы не перегружать историю Git-репозитория лишним весом.
+| Feature | Description |
+| :--- | :--- |
+| **⚡ Instant Queries** | Near-zero latency search powered by a streamlined, flattened `index.json` catalog. |
+| **📦 Bloat-Free Git** | Large binary `.gpkg` archives are offloaded to **GitHub Releases**, keeping repository footprint under 5MB. |
+| **🔐 Cryptographic Integrity** | Mandatory SHA-256 verification before extraction to guarantee binary safety. |
+| **🔄 Seamless Automation** | Built-in CLI sync (`gvalli update`) for effortless package index updates. |
 
-Автоматическая установка: Полная совместимость с командой GValli gpkg install <имя_пакета> для автоматической загрузки, проверки целостности и распаковки.
+### 🛠️ Architecture Flow
 
-Структура репозитория
-index.json — База данных индекса пакетов, содержащая метаданные, версии, ссылки на скачивание и контрольные суммы.
+┌─────────────────┐       1. Sync Catalog        ┌────────────────────────┐
+│   GValli CLI    │ ───────────────────────────> │       index.json       │
+│ (gvalli update) │ <─────────────────────────── │  (Central Repository)  │
+└────────┬────────┘       2. Parse Metadata      └────────────────────────┘
+         │
+         │ 3. Download .gpkg (HTTPS)
+         ▼
+┌─────────────────┐       4. SHA256 Checksum     ┌────────────────────────┐
+│ GitHub Releases │ ───────────────────────────> │ Target System Path     │
+│ (Binary Assets) │       5. Safe Unpack         │ (/usr/bin, /usr/lib)   │
+└─────────────────┘                              └────────────────────────┘
 
-GitHub Releases — Хранилище скомпилированных архивных файлов .gpkg.
+### 🚀 Quick Start
+
+	# 1. Update the local repository index
+	$ gvalli update
+
+	# 2. Search for available software
+	$ gvalli search htop
+
+	# 3. Install a package securely
+	$ gvalli gpkg install htop
+
+---
+
+## 🇷🇺 Русский
+
+**GValli Package Repository** — это централизованный каталог метаданных и индекс дистрибуции программного обеспечения для операционной системы GValli. Система обеспечивает молниеносный поиск, проверку целостности и безопасную установку бинарных пакетов `.gpkg`.
+
+### 🌟 Ключевые преимущества
+
+| Фича | Описание |
+| :--- | :--- |
+| **⚡ Мгновенный поиск** | Минимальная задержка при поиске благодаря оптимизированному индексу `index.json`. |
+| **📦 Чистая история Git** | Исполняемые `.gpkg` архивы хранятся в **GitHub Releases**, что спасает репозиторий от раздувания. |
+| **🔐 Гарантия безопасности** | Обязательная проверка контрольных сумм SHA-256 перед распаковкой каждого файла. |
+| **🔄 Простая автоматизация** | Синхронизация каталога одной командой (`gvalli update`). |
+
+### 🚀 Быстрый старт
+
+	# 1. Обновление локального индекса пакетов
+	$ gvalli update
+
+	# 2. Поиск необходимой программы
+	$ gvalli search neofetch
+
+	# 3. Автоматическая установка с проверкой хеша
+	$ gvalli gpkg install neofetch
+
+---
+
+## ⚙️ Specification / Спецификация
+
+### Package Index Schema (`index.json`)
+
+The entire repository relies on a validated JSON schema for cataloging available software.
+
+<details>
+<summary>🔍 Click to view example <code>index.json</code></summary>
+
+{
+  "version": "1.0",
+  "updated_at": "2026-08-09T18:00:00Z",
+  "packages": [
+    {
+      "name": "neofetch",
+      "version": "7.1.0",
+      "architecture": "x86_64",
+      "description": "CLI system information tool written in bash",
+      "category": "utils",
+      "homepage": "[https://github.com/dylanaraps/neofetch](https://github.com/dylanaraps/neofetch)",
+      "download_url": "[https://github.com/gvalli-os/packages/releases/download/v7.1.0/neofetch-7.1.0-x86_64.gpkg](https://github.com/gvalli-os/packages/releases/download/v7.1.0/neofetch-7.1.0-x86_64.gpkg)",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 34812,
+      "dependencies": ["bash"]
+    }
+  ]
+}
+</details>
+
+### Repository Layout
+
+.
+├── .github/
+│   └── workflows/
+│       ├── validate.yml      # CI check for index.json integrity
+│       └── release.yml       # Auto-upload .gpkg to GitHub Releases
+├── recipes/                  # Build scripts for community packages
+│   └── neofetch/
+│       └── gpkg.build
+├── index.json                # Master database index
+└── README.md                 # Documentation hub
+
+---
+
+## 🤝 Contributing
+
+We welcome community contributions! You can help by:
+1. Packaging new utilities into `.gpkg` archives.
+2. Submitting Pull Requests to add new packages to `index.json`.
+3. Reporting broken download links or checksum mismatches via [Issues](../../issues).
+
+---
+
+*Crafted with ❤️ for the **GValli Linux Ecosystem***
