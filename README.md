@@ -44,6 +44,7 @@ The **GValli Package Repository** is a high-performance, decentralized package c
 │ GitHub Releases │ ───────────────────────────>  │   Target System Path   │
 │ (Binary Assets) │        5. Safe Unpack         │  (/usr/bin, /usr/lib)  │
 └─────────────────┘                               └────────────────────────┘
+```
 
 ### 🚀 Quick Start
 
