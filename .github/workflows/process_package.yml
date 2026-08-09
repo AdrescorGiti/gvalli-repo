@@ -1,4 +1,4 @@
-iname: Process Package Submission
+name: Process Package Submission
 
 on:
   issues:
@@ -147,9 +147,7 @@ jobs:
                           with open(file_path, "rb") as f:
                               content = f.read()
                               
-                              # Проверяем сигнатуру ELF-бинарников (\x7fELF).
-                              # В бинарниках поиск строковых bash-команд отключается, 
-                              # чтобы избежать ложных срабатываний на таблицы символов C++/Qt.
+                              # Фильтр ELF-бинарников: пропускает строковые проверки на bash-команды в бинарниках C++/Qt
                               is_elf = content.startswith(b"\x7fELF")
                               
                               if not is_elf:
@@ -241,32 +239,3 @@ jobs:
             
             **Причина:**
             > ${{ env.MALWARE_REASON }}
-v.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'true'
-        uses: peter-evans/close-issue@v3
-        with:
-          comment: |
-            🚫 **Отказ в обновлении пакета!**
-            Пакет **${{ env.PKG_NAME }}** принадлежит пользователю **@${{ env.ORIGINAL_CREATOR }}**. 
-            Только первоначальный создатель пакета может публиковать для него обновления.
-
-      - name: Comment and Close (Security / Archive Error)
-        if: env.IS_PACKAGE == 'true' && env.MALWARE == 'true'
-        uses: peter-evans/close-issue@v3
-        with:
-          comment: |
-            🛑 **ОШИБКА ПРОВЕРКИ ИЛИ БЛОКИРОВКА ПАКЕТА!**
-            Пакет **${{ env.PKG_NAME }}** был отклонен сканером GValli Sentinel.
-            
-            **Причина:**
-            > ${{ env.MALWARE_REASON }}
-rror)
-        if: env.IS_PACKAGE == 'true' && env.MALWARE == 'true'
-        uses: peter-evans/close-issue@v3
-        with:
-          comment: |
-            🛑 **ОШИБКА ПРОВЕРКИ ИЛИ БЛОКИРОВКА ПАКЕТА!**
-            Пакет **${{ env.PKG_NAME }}** был отклонен сканером GValli Sentinel.
-            
-            **Причина:**
-            > ${{ env.MALWARE_REASON }}
-            
