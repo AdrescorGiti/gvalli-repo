@@ -113,6 +113,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/ungoogled-chromium-150.0.7871.181-1-x86_64.pkg.tar_ungoogled.gpkg",
       "sha256": "42fda748e247cedce6b72d80352f7b697a08271542e0555b3abbdc1a6e55ff60"
+    },
+    {
+      "name": "heroic",
+      "version": "2.22.1",
+      "description": "Heroic Game Launcher- is a Open-Sorce Linux game launcher, With GOG, Amazon Prime,Epic Games",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/Heroic-2.22.1-linux-x86_64_Heroic.gpkg",
+      "sha256": "ff06a65e4ed66f2e6d156eb4a0263be5ce245586b5c537eb1e3b378531e0564c"
     }
   ]
 }
