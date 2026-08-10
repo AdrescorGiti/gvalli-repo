@@ -77,6 +77,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/fastfetch-linux-aarch64_fastfetch_linux.gpkg",
       "sha256": "27c8f5e763ebb578a0132aae15326f45e8a98934e0adb43d2f5a6d5901f3ff3a"
+    },
+    {
+      "name": "alacritty",
+      "version": "0.17.0.1",
+      "description": "Linux Minimalistic Terminal Emulator",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/alacritty-0.17.0-1-x86_64.pkg.tar_alacritty.gpkg",
+      "sha256": "5aa11f9e79c239d329dea4d629a1b3a64afcb9660fd76521e8a49108867f0603"
     }
   ]
 }
