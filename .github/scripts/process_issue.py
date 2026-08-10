@@ -88,11 +88,22 @@ if res.returncode != 0 or not os.path.exists('package.gpkg') or os.path.getsize(
         f.write(f'PKG_NAME={name}\nMALWARE_REASON=Не удалось скачать файл (HTTP 404 или битая ссылка).\n')
     exit(0)
 
-# 5. СКАНИРОВАНИЕ НА ВИРУСЫ ЧЕРЕЗ VTEST (С ИСКЛЮЧЕНИЕМ ДЛЯ HIDDIFY И HAPP)
-EXEMPT_PACKAGES = ["hiddify", "happ"]
+# 5. РАСЧЕТ SHA256 ХЕША
+hasher = hashlib.sha256()
+with open('package.gpkg', 'rb') as f:
+    while chunk := f.read(8192):
+        hasher.update(chunk)
+sha256 = hasher.hexdigest()
 
-if name.lower() in EXEMPT_PACKAGES:
-    print(f"ℹ️ Пакет '{name}' находится в списке исключений. Проверка VTest пропущена.")
+# 6. ПРОВЕРКА БЕЗОПАСНОСТИ (VTEST + БЕЛЫЙ СПИСОК SHA256)
+# Вставь сюда SHA256 хеши проверенных пакетов (Hiddify, Happ и др.)
+WHITELIST_SHA256 = [
+    "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5",  # SHA256 твоего пакета Hiddify
+    "934d86151d9b8e55b57aa4ee66e2072897713bb61f8bfc6a2167e9f321108e3f",  # SHA256 твоего пакета Happ
+]
+
+if sha256.lower() in [h.lower() for h in WHITELIST_SHA256]:
+    print(f"✅ Файл с хешем {sha256} находится в белом списке. Проверка VTest пропущена.")
 else:
     print("Запуск проверки безопасности vtest check package.gpkg...")
     vtest_process = subprocess.run(["vtest", "check", "package.gpkg"], capture_output=True)
@@ -108,12 +119,7 @@ else:
     
     print("✅ Пакет успешно прошел проверку vtest.")
 
-# 6. ХЕШ И ОБНОВЛЕНИЕ JSON
-hasher = hashlib.sha256()
-with open('package.gpkg', 'rb') as f:
-    while chunk := f.read(8192): hasher.update(chunk)
-sha256 = hasher.hexdigest()
-
+# 7. ОБНОВЛЕНИЕ JSON
 creator_name = existing_pkg.get('creator', issue_author) if existing_pkg else issue_author
 
 pkg_data['packages'] = [p for p in pkg_data.get('packages', []) if p.get('name') != name]
