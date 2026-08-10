@@ -86,6 +86,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/alacritty-0.17.0-1-x86_64.pkg.tar_alacritty.gpkg",
       "sha256": "5aa11f9e79c239d329dea4d629a1b3a64afcb9660fd76521e8a49108867f0603"
+    },
+    {
+      "name": "lutris",
+      "version": "0.5.22-2",
+      "description": "Lutris is a Open Source games platform for Linux",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/lutris-0.5.22-2-any.pkg.tar_lutris_0.5.22.gpkg",
+      "sha256": "1ea5129de2201de25928a8559b2aa9d2e8409e9053bf9f273a5c02458c5a45a2"
     }
   ]
 }
