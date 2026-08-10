@@ -21,15 +21,6 @@
       "sha256": "f5cb1431b5722cc20605e1357ff667519f7c5ee470042005c78c31a3276cb98a"
     },
     {
-      "name": "gvalli",
-      "version": "0.2.0",
-      "description": "gvalli is a lightweight, ultra-fast CLI package manager built in Rust for G OS, designed to seamlessly build, install, and manage .gpkg software packages.",
-      "creator": "AdrescorGiti",
-      "dependencies": [],
-      "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.2.0/gvalli-0.2.0.gpkg",
-      "sha256": "740bdabed92d08360bc8739b8d3cbbb63bcb945b8d6874e3b063b738f13a95ab"
-    },
-    {
       "name": "d2g",
       "version": "2.0.0",
       "description": "deb2gpkg is a utility designed to convert Debian packages (.deb) into native G OS packages (.gpkg).",
@@ -140,6 +131,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/Hidiffy-Linux-x64-AppImage_Hiddify_Linux.gpkg",
       "sha256": "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5"
+    },
+    {
+      "name": "gvalli",
+      "version": "0.6.0",
+      "description": "gvalli is a lightweight, ultra-fast CLI package manager built in Rust for G OS, designed to seamlessly build, install, and manage .gpkg software packages.",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.6.0/gvalli-0.6.0.gpkg",
+      "sha256": "8117aa7b1dc4b23382f05cb36db951292af92529cd2641357854529f1ae3e415"
     }
   ]
 }
