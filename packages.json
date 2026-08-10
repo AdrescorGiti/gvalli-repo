@@ -95,6 +95,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/lutris-0.5.22-2-any.pkg.tar_lutris_0.5.22.gpkg",
       "sha256": "1ea5129de2201de25928a8559b2aa9d2e8409e9053bf9f273a5c02458c5a45a2"
+    },
+    {
+      "name": "keepassxc",
+      "version": "2.7.12-3",
+      "description": "Open-Source passwords and keys manager",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/keepassxc-2.7.12-3-x86_64.pkg.tar_keepassxc.gpkg",
+      "sha256": "668d1ccea3bba2e268e0327982fd30e7fc1f0c60e52352520ba756551e63b08c"
     }
   ]
 }
