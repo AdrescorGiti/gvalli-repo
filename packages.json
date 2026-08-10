@@ -131,6 +131,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/Happ.linux.x64.pkg.tar_Happ.linux.x64.pkg.tar_x86_64.gpkg",
       "sha256": "934d86151d9b8e55b57aa4ee66e2072897713bb61f8bfc6a2167e9f321108e3f"
+    },
+    {
+      "name": "hidiffy",
+      "version": "1.0.0",
+      "description": "A multi-platform proxy client based on Sing-box universal proxy tool-chain.",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/Hidiffy-Linux-x64-AppImage_Hiddify_Linux.gpkg",
+      "sha256": "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5"
     }
   ]
 }
