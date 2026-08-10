@@ -122,6 +122,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/Heroic-2.22.1-linux-x86_64_Heroic.gpkg",
       "sha256": "ff06a65e4ed66f2e6d156eb4a0263be5ce245586b5c537eb1e3b378531e0564c"
+    },
+    {
+      "name": "happ",
+      "version": "1.0.0",
+      "description": "Happ is a mobile application designed for convenient proxy server management, powered by the robust Xray core. The app features an intuitive interface and a range of useful functions, making it an essential tool for managing connections.",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/Happ.linux.x64.pkg.tar_Happ.linux.x64.pkg.tar_x86_64.gpkg",
+      "sha256": "934d86151d9b8e55b57aa4ee66e2072897713bb61f8bfc6a2167e9f321108e3f"
     }
   ]
 }
