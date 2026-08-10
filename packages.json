@@ -59,6 +59,15 @@
       ],
       "url": "https://github.com/AdrescorGiti/gvalli-repo/raw/refs/heads/main/vtest-0.1.0.gpkg",
       "sha256": "dd0da68c6ede8d28fde1f3276528f28814363493ed35190f147cc91cf133c179"
+    },
+    {
+      "name": "steam",
+      "version": "1.0.0.87",
+      "description": "Games Launcher Steam",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/steam-launcher_1:1.0.0.87_amd64.gpkg",
+      "sha256": "60bf945c9d27acc6a4e5f3e4808aaa68bc478f9316d43d7525fe993872d0ff5f"
     }
   ]
 }
