@@ -92,13 +92,13 @@ if res.returncode != 0 or not os.path.exists('package.gpkg') or os.path.getsize(
 EXEMPT_PACKAGES = ["hiddify", "happ"]
 
 if name.lower() in EXEMPT_PACKAGES:
-    print(f"ℹ️ Пакет '{name}' находится в списке доверенных VPN/сетевых утилит. Проверка VTest пропущена.")
+    print(f"ℹ️ Пакет '{name}' находится в списке исключений. Проверка VTest пропущена.")
 else:
     print("Запуск проверки безопасности vtest check package.gpkg...")
     vtest_process = subprocess.run(["vtest", "check", "package.gpkg"], capture_output=True)
     
     if vtest_process.returncode != 0:
-        print(f"VTest Error Output: {vtest_process.stdout.decode('utf-8', errors='ignore')} {vtest_process.stderr.decode('utf-8', errors='ignore')}")
+        print(f"VTest Output: {vtest_process.stdout.decode('utf-8', errors='ignore')} {vtest_process.stderr.decode('utf-8', errors='ignore')}")
         safe_reason = "Найден вирус"
         
         with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
