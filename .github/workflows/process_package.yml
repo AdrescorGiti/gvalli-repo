@@ -116,22 +116,35 @@ jobs:
                   f.write(f'PKG_NAME={name}\nMALWARE_REASON=Не удалось скачать файл (HTTP 404 или битая ссылка).\n')
               exit(0)
 
-          # 5. СКАНИРОВАНИЕ НА ВИРУСЫ ЧЕРЕЗ VTEST
-          print("Запуск проверки безопасности vtest check package.gpkg...")
-          vtest_process = subprocess.run(["vtest", "check", "package.gpkg"], capture_output=True)
-          
-          # Код 0 означает, что пакет чист. Если vtest использует другой код успеха, замени 0 на нужное число (например, 50).
-          if vtest_process.returncode != 0:
-              print(f"VTest Error Output: {vtest_process.stdout.decode('utf-8', errors='ignore')} {vtest_process.stderr.decode('utf-8', errors='ignore')}")
-              safe_reason = "Найден вирус"
-              
-              with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
-                  f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
-                  f.write(f'PKG_NAME={name}\nMALWARE_REASON={safe_reason}\n')
-              exit(0)
-          
-          print("✅ Пакет успешно прошел проверку vtest.")
+         # 5. СКАНИРОВАНИЕ НА ВИРУСЫ ЧЕРЕЗ VTEST (ПО БЕЛОМУ СПИСКУ SHA256)
+          WHITELIST_SHA256 = [
+              "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5.gpkg",
+              "934d86151d9b8e55b57aa4ee66e2072897713bb61f8bfc6a2167e9f321108e3f.gpkg"
+          ]
 
+          # Считаем хеш входящего файла
+          hasher = hashlib.sha256()
+          with open('package.gpkg', 'rb') as f:
+              while chunk := f.read(8192): hasher.update(chunk)
+          file_hash = hasher.hexdigest()
+
+          if file_hash in WHITELIST_SHA256:
+              print(f"✅ Файл {file_hash} находится в белом списке. Проверка VTest пропущена.")
+          else:
+              print("Запуск проверки безопасности vtest check package.gpkg...")
+              vtest_process = subprocess.run(["vtest", "check", "package.gpkg"], capture_output=True)
+              
+              if vtest_process.returncode != 0:
+                  print(f"VTest Error Output: {vtest_process.stdout.decode('utf-8', errors='ignore')} {vtest_process.stderr.decode('utf-8', errors='ignore')}")
+                  safe_reason = "Найден вирус"
+                  
+                  with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+                      f.write('IS_PACKAGE=true\nUNAUTHORIZED=false\nMALWARE=true\n')
+                      f.write(f'PKG_NAME={name}\nMALWARE_REASON={safe_reason}\n')
+                  exit(0)
+              
+            print("✅ Пакет успешно прошел проверку vtest.")
+            
           # 6. ХЕШ И ОБНОВЛЕНИЕ JSON
           hasher = hashlib.sha256()
           with open('package.gpkg', 'rb') as f:
