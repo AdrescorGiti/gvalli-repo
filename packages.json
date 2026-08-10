@@ -104,6 +104,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/keepassxc-2.7.12-3-x86_64.pkg.tar_keepassxc.gpkg",
       "sha256": "668d1ccea3bba2e268e0327982fd30e7fc1f0c60e52352520ba756551e63b08c"
+    },
+    {
+      "name": "ungoogled-chromium",
+      "version": "150.0.7871.181-1",
+      "description": "Ungoogled Chromium- is Open-Source private browser, based on Chromium",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/ungoogled-chromium-150.0.7871.181-1-x86_64.pkg.tar_ungoogled.gpkg",
+      "sha256": "42fda748e247cedce6b72d80352f7b697a08271542e0555b3abbdc1a6e55ff60"
     }
   ]
 }
