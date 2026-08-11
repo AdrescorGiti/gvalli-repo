@@ -98,8 +98,9 @@ sha256 = hasher.hexdigest()
 # 6. ПРОВЕРКА БЕЗОПАСНОСТИ (VTEST + БЕЛЫЙ СПИСОК SHA256)
 # Вставь сюда SHA256 хеши проверенных пакетов (Hiddify, Happ и др.)
 WHITELIST_SHA256 = [
-    "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5",  # SHA256 твоего пакета Hiddify
-    "934d86151d9b8e55b57aa4ee66e2072897713bb61f8bfc6a2167e9f321108e3f",  # SHA256 твоего пакета Happ
+    "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5",  
+    "934d86151d9b8e55b57aa4ee66e2072897713bb61f8bfc6a2167e9f321108e3f",
+    "ffa7bef4c9927261eee651ef028c9dc68f1789fb46f4d2fb0f9bc602bba714e3" 
 ]
 
 if sha256.lower() in [h.lower() for h in WHITELIST_SHA256]:
