@@ -140,6 +140,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.6.0/gvalli-0.6.0.gpkg",
       "sha256": "8117aa7b1dc4b23382f05cb36db951292af92529cd2641357854529f1ae3e415"
+    },
+    {
+      "name": "gos-toolkit",
+      "version": "1.0.0",
+      "description": "A fast, native Rust CLI utility to compile multi-language projects and manage .gpkg package archives for G OS.",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gos-toolkit/releases/download/v.1.0.0/gos-toolkit-1.0.0.gpkg",
+      "sha256": "d535f875d5e2b76db86c980ff63bf7cfbcb87639a997f13a63e9fba1711382b4"
     }
   ]
 }
