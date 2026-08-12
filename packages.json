@@ -158,6 +158,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/vscode/releases/download/v.1.0.0/VSCode.gpkg",
       "sha256": "ffa7bef4c9927261eee651ef028c9dc68f1789fb46f4d2fb0f9bc602bba714e3"
+    },
+    {
+      "name": "openssh-client",
+      "version": "1.0.0",
+      "description": "OpenSSH Client",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/openssh-client.gpkg/releases/download/v.1.0.0/gvalli-0.7.0.gpkg",
+      "sha256": "7911b950a7d0b8d01fb71d1fc548fc318584bc9c9eff362f95e9ef60a420eab4"
     }
   ]
 }
