@@ -160,11 +160,11 @@
     {
       "name": "gvalli",
       "version": "0.7.2",
-      "description": "TUI/CLI Package Manager for G OS",
+      "description": "GValli - is TUI/CLI Packets Manager for G OS",
       "creator": "AdrescorGiti",
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.7.2/gvalli-0.7.2.gpkg",
-      "sha256": "332fcbcf1faa77131a73c2648ae8be19fc32785283f08e13a60e2a0eeb80124e"
+      "sha256": "fef5b2734a46c7ab30ea06e4f99418eb0cc692cc5284cf26a157c6d2aee45268"
     }
   ]
 }
