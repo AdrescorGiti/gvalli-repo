@@ -122,15 +122,6 @@
       "sha256": "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5"
     },
     {
-      "name": "gvalli",
-      "version": "0.6.0",
-      "description": "gvalli is a lightweight, ultra-fast CLI package manager built in Rust for G OS, designed to seamlessly build, install, and manage .gpkg software packages.",
-      "creator": "AdrescorGiti",
-      "dependencies": [],
-      "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.6.0/gvalli-0.6.0.gpkg",
-      "sha256": "8117aa7b1dc4b23382f05cb36db951292af92529cd2641357854529f1ae3e415"
-    },
-    {
       "name": "gos-toolkit",
       "version": "1.0.0",
       "description": "A fast, native Rust CLI utility to compile multi-language projects and manage .gpkg package archives for G OS.",
@@ -165,6 +156,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v.3.0.0/Deb2GPKG-3.0.0.gpkg",
       "sha256": "181c8f792856c68c24d4d2840fbfd1dd37111e3ed7ec1d47b0fe8d0591464401"
+    },
+    {
+      "name": "gvalli",
+      "version": "0.7.2",
+      "description": "TUI/CLI Package Manager for G OS",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.7.2/gvalli-0.7.2.gpkg",
+      "sha256": "332fcbcf1faa77131a73c2648ae8be19fc32785283f08e13a60e2a0eeb80124e"
     }
   ]
 }
