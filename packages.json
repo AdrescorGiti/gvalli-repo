@@ -21,17 +21,6 @@
       "sha256": "f5cb1431b5722cc20605e1357ff667519f7c5ee470042005c78c31a3276cb98a"
     },
     {
-      "name": "d2g",
-      "version": "2.0.0",
-      "description": "deb2gpkg is a utility designed to convert Debian packages (.deb) into native G OS packages (.gpkg).",
-      "creator": "AdrescorGiti",
-      "dependencies": [
-        "gvalli"
-      ],
-      "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v.2.0/d2g-2.0.0.gpkg",
-      "sha256": "6106306bb3fe2af4eccbe0b6ff378a6370e601be3e0578da74f49e4dc455474b"
-    },
-    {
       "name": "64gram",
       "version": "1.2.7",
       "description": "Enhanced Telegram Desktop fork with power-user features and UI customization.",
@@ -167,6 +156,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/openssh-client.gpkg/releases/download/v.1.0.0/gvalli-0.7.0.gpkg",
       "sha256": "7911b950a7d0b8d01fb71d1fc548fc318584bc9c9eff362f95e9ef60a420eab4"
+    },
+    {
+      "name": "d2g",
+      "version": "3.0.0",
+      "description": "Deb2GPKG is a modern utility designed to convert Debian packages (.deb) into native G OS packages",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v.3.0.0/Deb2GPKG-3.0.0.gpkg",
+      "sha256": "181c8f792856c68c24d4d2840fbfd1dd37111e3ed7ec1d47b0fe8d0591464401"
     }
   ]
 }
