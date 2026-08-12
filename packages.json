@@ -145,8 +145,8 @@
       "description": "OpenSSH Client",
       "creator": "AdrescorGiti",
       "dependencies": [],
-      "url": "https://github.com/AdrescorGiti/openssh-client.gpkg/releases/download/v.1.0.0/gvalli-0.7.0.gpkg",
-      "sha256": "7911b950a7d0b8d01fb71d1fc548fc318584bc9c9eff362f95e9ef60a420eab4"
+      "url": "https://github.com/AdrescorGiti/openssh-client.gpkg/releases/download/v.1.0.0/openssh-client_1.10.4p1-4_amd64.gpkg",
+      "sha256": "cbfd3c0d980d363cf925cc60f973271da4c9dc5d6e73164f1af99b0064fcc502"
     },
     {
       "name": "d2g",
