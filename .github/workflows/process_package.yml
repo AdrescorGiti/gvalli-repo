@@ -22,22 +22,22 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Process Issue, Scan Security, and Update JSON
+      - name: Process Issue and Update JSON
         run: python3 .github/scripts/process_issue.py
 
       - name: Commit and Push changes
-        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false' && env.MALWARE == 'false'
+        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update package ${{ env.PKG_NAME }} via automated request"
           file_pattern: "${{ env.TARGET_JSON }}"
 
       - name: Comment and Close (Success)
-        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false' && env.MALWARE == 'false'
+        if: env.IS_PACKAGE == 'true' && env.UNAUTHORIZED == 'false'
         uses: peter-evans/close-issue@v3
         with:
           comment: |
-            🎉 Поздравляем! Пакет **${{ env.PKG_NAME }}** успешно прошел проверки безопасности и обновлен в репозитории!
+            🎉 Поздравляем! Пакет **${{ env.PKG_NAME }}** успешно добавлен/обновлен в репозитории!
             
             **Метаданные:**
             * **SHA256:** `${{ env.PKG_SHA256 }}`
@@ -51,14 +51,3 @@ jobs:
             🚫 **Отказ в обновлении пакета!**
             Пакет **${{ env.PKG_NAME }}** принадлежит пользователю **@${{ env.ORIGINAL_CREATOR }}**. 
             Только первоначальный создатель пакета может публиковать для него обновления.
-
-      - name: Comment and Close (Security / Archive Error)
-        if: env.IS_PACKAGE == 'true' && env.MALWARE == 'true'
-        uses: peter-evans/close-issue@v3
-        with:
-          comment: |
-            🛑 **ОШИБКА ПРОВЕРКИ ИЛИ БЛОКИРОВКА ПАКЕТА!**
-            Пакет **${{ env.PKG_NAME }}** был отклонен сканером GValli Sentinel.
-            
-            **Причина:**
-            > ${{ env.MALWARE_REASON }}
