@@ -100,7 +100,8 @@ sha256 = hasher.hexdigest()
 WHITELIST_SHA256 = [
     "6e8a5b14f27f59a454f214c89566a9891d81b4c2427ae25ce57c6c288a131fc5",  
     "934d86151d9b8e55b57aa4ee66e2072897713bb61f8bfc6a2167e9f321108e3f",
-    "ffa7bef4c9927261eee651ef028c9dc68f1789fb46f4d2fb0f9bc602bba714e3" 
+    "ffa7bef4c9927261eee651ef028c9dc68f1789fb46f4d2fb0f9bc602bba714e3"
+    "4a5c065f13941a9e1deddec13697c049283d5728f31cabf72ae2fdced682efef"
 ]
 
 if sha256.lower() in [h.lower() for h in WHITELIST_SHA256]:
