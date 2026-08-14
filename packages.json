@@ -165,6 +165,17 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.7.2/gvalli-0.7.2.gpkg",
       "sha256": "fef5b2734a46c7ab30ea06e4f99418eb0cc692cc5284cf26a157c6d2aee45268"
+    },
+    {
+      "name": "openssh",
+      "version": "1.0.0",
+      "description": "OpenSSH",
+      "creator": "AdrescorGiti",
+      "dependencies": [
+        "opensh-client"
+      ],
+      "url": "https://github.com/AdrescorGiti/openssh-client.gpkg/releases/download/v.1.0.0/openssh-server_1.10.4p1-4_amd64.gpkg",
+      "sha256": "2462f22506d28c88116dd049c49c23e247c8005302774d7a545746177826555c"
     }
   ]
 }
