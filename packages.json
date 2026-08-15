@@ -50,15 +50,6 @@
       "sha256": "60bf945c9d27acc6a4e5f3e4808aaa68bc478f9316d43d7525fe993872d0ff5f"
     },
     {
-      "name": "fastfetch",
-      "version": "1.0.0",
-      "description": "Lightwight and fast utility. It show`s your system info",
-      "creator": "AdrescorGiti",
-      "dependencies": [],
-      "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/fastfetch-linux-aarch64_fastfetch_linux.gpkg",
-      "sha256": "27c8f5e763ebb578a0132aae15326f45e8a98934e0adb43d2f5a6d5901f3ff3a"
-    },
-    {
       "name": "alacritty",
       "version": "0.17.0.1",
       "description": "Linux Minimalistic Terminal Emulator",
@@ -185,6 +176,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/gfetch-1.0.0.gpkg",
       "sha256": "db7b9d062bfa0b4924712213be8df2d8853af203e065f76dbee5da0bb3499708"
+    },
+    {
+      "name": "fastfetch",
+      "version": "1.0.0",
+      "description": "IDK",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/fastfetch_2.40.4+dfsg-1_amd64.gpkg",
+      "sha256": "0af3e2df3263435f657153b380ee66d77318c796f6b37d18200cc373af69d87a"
     }
   ]
 }
