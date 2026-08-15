@@ -176,6 +176,15 @@
       ],
       "url": "https://github.com/AdrescorGiti/openssh-client.gpkg/releases/download/v.1.0.0/openssh-server_1.10.4p1-4_amd64.gpkg",
       "sha256": "2462f22506d28c88116dd049c49c23e247c8005302774d7a545746177826555c"
+    },
+    {
+      "name": "gfetch",
+      "version": "1.0.0",
+      "description": "Fastfetch",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/raw/refs/heads/main/gfetch-1.0.0.gpkg",
+      "sha256": "db7b9d062bfa0b4924712213be8df2d8853af203e065f76dbee5da0bb3499708"
     }
   ]
 }
