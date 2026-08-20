@@ -194,6 +194,15 @@
       "dependencies": [],
       "url": "https://github.com/LINUXHUNTERREDHAT/PortProtonQt-gpkg/releases/download/Release/portprotonqt_1.3.2_amd64.gpkg",
       "sha256": "dc32d0a03befc23e9f3a84b438cc705906b65096f37e67289a298491e2325992"
+    },
+    {
+      "name": "portproton",
+      "version": "1.7.5",
+      "description": "Software for playing Microsoft Windows games and launchers",
+      "creator": "LINUXHUNTERREDHAT",
+      "dependencies": [],
+      "url": "https://github.com/LINUXHUNTERREDHAT/PortProton_ALT-gpkg/releases/download/Release/portproton_1.7.5_amd64.gpkg",
+      "sha256": "0300b2f86e5acff91ba37447f865b3a2150129663e48c5b007f53be45d890bdc"
     }
   ]
 }
