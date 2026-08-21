@@ -203,6 +203,15 @@
       "dependencies": [],
       "url": "https://github.com/LINUXHUNTERREDHAT/PortProton_ALT-gpkg/releases/download/Release/portproton_1.7.5_amd64.gpkg",
       "sha256": "0300b2f86e5acff91ba37447f865b3a2150129663e48c5b007f53be45d890bdc"
+    },
+    {
+      "name": "vesktop",
+      "version": "1.6.7",
+      "description": "Vesktop is a cross platform desktop app aiming to give you a snappier Discord experience with Vencord pre-installed",
+      "creator": "LINUXHUNTERREDHAT",
+      "dependencies": [],
+      "url": "https://github.com/LINUXHUNTERREDHAT/Vesktop-gpkg/releases/download/Release/vesktop_1.6.7_amd64.gpkg",
+      "sha256": "16e02f78725dd8437885c43c81e255c9cf8036adfe7b9048a086ad8fe9e3475b"
     }
   ]
 }
