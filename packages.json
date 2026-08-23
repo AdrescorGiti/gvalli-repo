@@ -212,6 +212,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v.4.0/Deb2GPKG-4.0.gpkg",
       "sha256": "26a8647a3b8bf1b007c6baff62f0f2ed0ecefc1e78692e61e773c96a651e9c89"
+    },
+    {
+      "name": "xdg-desktop-portal-kde",
+      "version": "6.3.5-1",
+      "description": "XDG-DESKTOP-PORTAL-KDE",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/xdg-desktop-portal-kde_6.3.5-1_amd64.gpkg",
+      "sha256": "61e813efbcc453fcebf9d7c11c0d565268580fbdb7154314084e80f445463deb"
     }
   ]
 }
