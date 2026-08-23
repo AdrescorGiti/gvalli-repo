@@ -140,15 +140,6 @@
       "sha256": "181c8f792856c68c24d4d2840fbfd1dd37111e3ed7ec1d47b0fe8d0591464401"
     },
     {
-      "name": "gvalli",
-      "version": "0.7.2",
-      "description": "GValli - is TUI/CLI Packets Manager for G OS",
-      "creator": "AdrescorGiti",
-      "dependencies": [],
-      "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.7.2/gvalli-0.7.2.gpkg",
-      "sha256": "fef5b2734a46c7ab30ea06e4f99418eb0cc692cc5284cf26a157c6d2aee45268"
-    },
-    {
       "name": "openssh",
       "version": "1.0.0",
       "description": "OpenSSH",
@@ -212,6 +203,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/gvalli-pack1/releases/download/25MB/steam-launcher_1.1.0.0.87_amd64.gpkg",
       "sha256": "0bac7ebbe2c13c70b47267b1fd439a91eccd93734b5e6e20ff992687813d91fa"
+    },
+    {
+      "name": "gvalli",
+      "version": "0.7.5",
+      "description": "GValli - is TUI/CLI Packets Manager for G OS",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.7.5/gvalli-0.7.5.gpkg",
+      "sha256": "ba8802d6cb0e289b960ae9c571301a3bdf84d0d7ac0d2b1aa13b8f283d22bc5e"
     }
   ]
 }
