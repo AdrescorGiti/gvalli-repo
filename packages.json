@@ -131,15 +131,6 @@
       "sha256": "cbfd3c0d980d363cf925cc60f973271da4c9dc5d6e73164f1af99b0064fcc502"
     },
     {
-      "name": "d2g",
-      "version": "3.0.0",
-      "description": "Deb2GPKG is a modern utility designed to convert Debian packages (.deb) into native G OS packages",
-      "creator": "AdrescorGiti",
-      "dependencies": [],
-      "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v.3.0.0/Deb2GPKG-3.0.0.gpkg",
-      "sha256": "181c8f792856c68c24d4d2840fbfd1dd37111e3ed7ec1d47b0fe8d0591464401"
-    },
-    {
       "name": "openssh",
       "version": "1.0.0",
       "description": "OpenSSH",
@@ -212,6 +203,15 @@
       "dependencies": [],
       "url": "https://github.com/AdrescorGiti/GValli/releases/download/v.0.7.5/gvalli-0.7.5.gpkg",
       "sha256": "ba8802d6cb0e289b960ae9c571301a3bdf84d0d7ac0d2b1aa13b8f283d22bc5e"
+    },
+    {
+      "name": "d2g",
+      "version": "4.0",
+      "description": "Deb2GPKG is a modern utility designed to convert Debian packages (.deb) into native G OS packages",
+      "creator": "AdrescorGiti",
+      "dependencies": [],
+      "url": "https://github.com/AdrescorGiti/Deb2GPKG/releases/download/v.4.0/Deb2GPKG-4.0.gpkg",
+      "sha256": "26a8647a3b8bf1b007c6baff62f0f2ed0ecefc1e78692e61e773c96a651e9c89"
     }
   ]
 }
